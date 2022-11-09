@@ -5,5 +5,6 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src_api", "vite.config.ts"]
+  "include": ["src"]
 }
+
