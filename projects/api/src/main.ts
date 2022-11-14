@@ -1,11 +1,16 @@
-import * as Koa from 'koa';
-import * as glob from 'glob'
+import Koa from 'koa';
+import controller from './controller'
+import _ from 'lodash'
+import { alsRun } from './utils/useCtx';
+
+const app = new Koa()
 
 
-// const controllers = glob.sync('./controller/**/*.ts')
-console.log('controllers')
+app.use((ctx) => {
+  const callPath = ctx.path.split('/').slice(1)
+  const callFn = _.get(controller, callPath)
+  alsRun({ ctx }, callFn)
+})
 
-// const app = new Koa()
-// app.use((ctx) => {
-  
-// })
+app.listen(3000)
+
