@@ -1,0 +1,22 @@
+{
+  "name": "@bff-sdk/api",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "publish": "tsc && npm publish --registry=https://registry.npmjs.org --access public"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@types/lodash": "^4.14.188",
+    "@types/koa": "^2.13.5",
+    "typescript": "^4.8.4"
+  }
+}

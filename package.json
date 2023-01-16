@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "pnpm -F web dev"
+    "dev": "pnpm -F web dev & pnpm -F api dev"
   },
   "keywords": [],
   "author": "",

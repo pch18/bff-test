@@ -1,0 +1,15 @@
+{
+  "name": "@bff-sdk/web",
+  "version": "1.0.1",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "publish": "tsc && npm publish --registry=https://registry.npmjs.org --access public"
+  },
+  "keywords": [],
+  "author": "pch18",
+  "license": "ISC",
+  "exports": {
+    "./*": "./dist/*.js"
+  }
+}

@@ -5,7 +5,6 @@ import { UserInfo } from 'api/src/controller/user'
 
 function App() {
   const [userInfoList, setUserInfoList] = useState<UserInfo[]>([])
-
   return (
     <div className="App">
       {userInfoList.map(u => <div>{JSON.stringify(u)}</div>)}

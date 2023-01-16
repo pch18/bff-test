@@ -7,13 +7,12 @@
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "outDir": "dist"
   },
-  "include": ["src", "src/controller/user/index.ts"],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
-  }
+  "include": ["./"]
 }
