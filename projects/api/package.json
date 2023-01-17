@@ -5,22 +5,27 @@
   "type": "module",
   "main": "./src/controller/index.ts",
   "scripts": {
-    "dev": "node --watch --loader=ts-node/esm src/main.ts"
+    "dev": "node --watch --loader=ts-node/esm src/main.ts",
+    "debug": "node --inspect --watch --loader=ts-node/esm src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@bff-sdk/api": "workspace:*",
+    "@prisma/client": "^4.8.1",
     "@types/lodash": "^4.14.188",
     "glob": "^8.0.3",
     "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "@bff-sdk/api": "workspace:*"
+    "prisma": "^4.8.1"
   },
   "devDependencies": {
     "@types/glob": "^8.0.0",
     "@types/koa": "^2.13.5",
+    "@types/koa-bodyparser": "^4.3.10",
     "@types/node": "^18.11.9",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",

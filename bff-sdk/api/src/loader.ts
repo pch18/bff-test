@@ -1,24 +1,58 @@
 import { Middleware } from "koa"
-import _ from "lodash"
-import { AsyncLocalStorage } from "async_hooks"
-import { ParameterizedContext } from "koa"
 import { ApiError, NetError } from "./error"
+import Bodyparser from 'koa-bodyparser'
+import { alsRun } from "./context"
+import { genPathControllerMap } from "./genPathControllerMap"
 
-export const createBffLoader = (controller: any): Middleware => {
+export const createBffLoader = (controller: any, opts?: {
+  /** controller 对应的路由前缀,默认为 /api/ */
+  controllerPathPrefix?: string
+  /** 前置调用, 可以通过抛错阻止 controller 调用, 常用作权限/登录态校验 */
+  preCallFn?: (callFn: Function) => any,
+  /** 仅允许通过Post访问, 默认 false */
+  onlyPostMethod?: boolean
+  /** 可以输出一些 debug log */
+  debug?: boolean,
+}): Middleware => {
+  const {
+    controllerPathPrefix = '/api/',
+    preCallFn,
+    debug = false,
+    onlyPostMethod = false
+  } = opts || {}
+
+  const bodyParser = Bodyparser()
+  const pathControllerMap = genPathControllerMap(controller, controllerPathPrefix)
+  if (debug) {
+    console.debug('pathControllerMap@createBffLoader: ', pathControllerMap)
+  }
+
   return async (ctx, next) => {
-    const callPath = ctx.path.split('/').slice(1)
+    await bodyParser(ctx, () => Promise.resolve(undefined));
+    const { params = [] } = ctx.request.body as any || {}
 
-    // 前置 has 判断, 避免访问到原型上的属性
-    const callFn = _.has(controller, callPath) ? _.get(controller, callPath) : undefined
+    if (!(params instanceof Array)) {
+      throw new NetError('请求数据不合法', 400)
+    }
+
+    if (onlyPostMethod && ctx.method !== 'POST') {
+      return await next()
+    }
+
+    const callFn = pathControllerMap[ctx.path]
 
     if (callFn) {
       try {
-        const resp = await alsRun(ctx, callFn)
+        const callFnBindParams = async () => {
+          await preCallFn?.(callFn)
+          return await callFn(...params)
+        }
+        const resp = await alsRun(ctx, callFnBindParams)
         ctx.status = 200;
         ctx.body = {
           error: false,
           code: 0,
-          body: resp
+          data: resp
         }
       } catch (e) {
         if (e instanceof ApiError) {
@@ -32,7 +66,8 @@ export const createBffLoader = (controller: any): Middleware => {
           ctx.status = e.httpCode;
           ctx.body = e.message
         } else {
-
+          ctx.status = 500;
+          ctx.body = (e as any)?.message || '内部错误'
         }
       }
     }
@@ -41,17 +76,3 @@ export const createBffLoader = (controller: any): Middleware => {
 }
 
 
-type StorageType = ParameterizedContext
-const asyncLocalStorage = new AsyncLocalStorage<StorageType>()
-
-const alsRun = (data: StorageType, fn: any) => {
-  return asyncLocalStorage.run(data, fn)
-}
-
-export const useCtx = () => {
-  const ctx = asyncLocalStorage.getStore()
-  if (!ctx) {
-    throw new Error('只能在请求上下文中使用 useCtx')
-  }
-  return ctx
-}

@@ -1,9 +1,15 @@
 import { ApiError, NetError } from "./error"
 
-const apiCallFn = async (path: string[], ...data: any[]) => {
-  const resRaw = await fetch(`/${path.join('/')}`, {
+
+declare const __BFF_API_PATH_PREFIX__: string
+
+const apiCallFn = async (path: string[], ...params: any[]) => {
+  const resRaw = await fetch(`${__BFF_API_PATH_PREFIX__}${path.join('/')}`, {
     method: 'post',
-    body: JSON.stringify({ data })
+    body: JSON.stringify({ params, time: new Date().getTime() }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
   if (resRaw.status >= 200 && resRaw.status < 300) {
     const resJson = await resRaw.json()

@@ -3,13 +3,12 @@
   "version": "1.0.1",
   "description": "",
   "type": "module",
+  "main": "./index.js",
   "scripts": {
+    "build": "tsc",
     "publish": "tsc && npm publish --registry=https://registry.npmjs.org --access public"
   },
   "keywords": [],
   "author": "pch18",
-  "license": "ISC",
-  "exports": {
-    "./*": "./dist/*.js"
-  }
+  "license": "ISC"
 }

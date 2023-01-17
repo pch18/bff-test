@@ -1,19 +1,26 @@
 import { useCtx } from "@bff-sdk/api"
+import { prisma } from "../../utils/prisma"
 
-const delay = (t: number) => new Promise(r => setTimeout(r, t))
 
-export interface UserInfo {
-  name: string,
-  mobile: string
+
+export const getAllUsers = async () => {
+  // const ctx = useCtx()
+  const users = await prisma.user.findMany()
+  return users
 }
 
-export const getUserInfo = async () => {
-  await delay(200)
+
+
+export const addUser = async (name: string) => {
   const ctx = useCtx()
-  const user = {
-    name: Math.random().toString(),
-    mobile: Math.random().toString(),
-    a: ctx.href
-  }
-  return user
-} 
+  console.log({ name })
+
+  const user = await prisma.user.create({
+    data: {
+      name: name,
+      email: name,
+    }
+  })
+
+  return { user, ctx }
+}
