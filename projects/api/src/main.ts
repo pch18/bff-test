@@ -9,7 +9,10 @@ const app = new Koa()
 
 app.use(createBffLoader(controller))
 
-
+// app.use((ctx, next) => {
+//   ctx.body = 'xxx';
+//   next()
+// })
 // const bodyParser = Bodyparser()
 
 // app.use(async (ctx, next) => {

@@ -1,10 +1,9 @@
 import { useState } from "react";
 import "./App.css";
 import api from "api";
-import { UserInfo } from "api/src/controller/user";
+import { skipErrorEvent } from "@bff-sdk/web/bffRequest";
 
 function App() {
-  // const [userInfoList, setUserInfoList] = useState<UserInfo[]>([])
   const [users, setUsers] = useState("");
   const [name, setName] = useState("");
   return (
@@ -13,6 +12,7 @@ function App() {
       <button
         onClick={async (u) => {
           const resp = await api.user.getAllUsers();
+          const resp2 = await skipErrorEvent(api).user.getAllUsers()
           setUsers(JSON.stringify(resp));
         }}
       >
@@ -22,7 +22,7 @@ function App() {
       <input onChange={(e) => setName(e.target.value)} value={name}></input>
       <button
         onClick={async (u) => {
-          await api.user.addUser(name);
+          await api.user.addUser2(name)
         }}
       >
         add
