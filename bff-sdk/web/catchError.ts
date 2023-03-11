@@ -1,38 +1,37 @@
 import { ApiError, NetError } from "./error";
 
-export const catchApiError = (fn: (err: ApiError) => void, preventDefault = false) => {
-  window.addEventListener("unhandledrejection", (event) => {
-    if (event.reason instanceof ApiError) {
-      if (preventDefault) {
-        // 增加阻止默认事件，阻止页面报错
-        event.preventDefault();
-      }
+
+type CatchType = 'bubble' | 'focus'
+
+const createApiEvent = (fn: (err: ApiError) => void) => {
+  return (event: any) => {
+    if (event?.reason instanceof ApiError) {
       fn(event.reason)
     }
-  });
+  }
 }
 
-export const catchNetError = (fn: (err: NetError) => void, preventDefault = false) => {
-  window.addEventListener("unhandledrejection", (event) => {
-    if (event.reason instanceof NetError) {
-      if (preventDefault) {
-        // 增加阻止默认事件，阻止页面报错
-        event.preventDefault();
-      }
+const createNetEvent = (fn: (err: NetError) => void) => {
+  return (event: any) => {
+    if (event?.reason instanceof NetError) {
       fn(event.reason)
     }
-  });
+  }
 }
 
-export const catchApiOrNetError = (fn: (err: ApiError | NetError) => void, preventDefault = false) => {
-  window.addEventListener("unhandledrejection", (event) => {
-    if (event.reason instanceof ApiError || event.reason instanceof NetError) {
-      if (preventDefault) {
-        // 增加阻止默认事件，阻止页面报错
-        event.preventDefault();
-      }
-      fn(event.reason)
-    }
-  });
+export const catchApiError = (fn: (err: ApiError) => void, catchType: CatchType = 'bubble') => {
+  if (catchType === 'bubble') {
+    window.addEventListener("unhandledrejection", createApiEvent(fn));
+  } else if (catchType === 'focus') {
+    window.addEventListener("bffapirejection", createApiEvent(fn));
+  }
+}
+
+export const catchNetError = (fn: (err: NetError) => void, catchType: CatchType = 'bubble') => {
+  if (catchType === 'bubble') {
+    window.addEventListener("unhandledrejection", createNetEvent(fn));
+  } else if (catchType === 'focus') {
+    window.addEventListener("bffapirejection", createNetEvent(fn));
+  }
 }
 

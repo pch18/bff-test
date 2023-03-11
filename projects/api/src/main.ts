@@ -9,18 +9,20 @@ const app = new Koa()
 
 app.use(createBffLoader(controller))
 
-// app.use((ctx, next) => {
-//   ctx.body = 'xxx';
-//   next()
-// })
-// const bodyParser = Bodyparser()
+app.use((ctx, next) => {
+  ctx.body = 'xxx';
+  next()
+})
+const bodyParser = Bodyparser()
 
-// app.use(async (ctx, next) => {
-//   await bodyParser(ctx, () => Promise.resolve(undefined))
-//   console.log(ctx.request)
+app.use(async (ctx, next) => {
+  await bodyParser(ctx, () => Promise.resolve(undefined))
+  console.log(ctx.request)
 
-//   ctx.body = ctx.request.body
-// })
+  ctx.body = ctx.request.body
+  ctx.res.write
+})
 
 app.listen(7016)
+
 

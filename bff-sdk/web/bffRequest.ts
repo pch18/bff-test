@@ -1,6 +1,5 @@
 import { ApiError, NetError } from "./error"
 
-
 declare const __BFF_API_PATH_PREFIX__: string
 
 const apiCallFn = async (path: string[], ...params: any[]) => {
