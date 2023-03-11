@@ -3,23 +3,21 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "publish": "tsc && npm publish --registry=https://registry.npmjs.org --access public"
+    "build": "rm -rf ./dist/* && tsc",
+    "publish": "npm run build && npm publish --registry=https://registry.npmjs.org --access public"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/koa-bodyparser": "^4.3.10",
-    "koa-bodyparser": "^4.3.0",
-    "lodash": "^4.17.21"
+    "koa-bodyparser": "^4.3.0"
   },
   "devDependencies": {
     "@types/koa": "^2.13.5",
-    "@types/lodash": "^4.14.188",
     "@types/node": "^18.11.9",
+    "@types/koa-bodyparser": "^4.3.10",
     "typescript": "^4.8.4"
   }
 }

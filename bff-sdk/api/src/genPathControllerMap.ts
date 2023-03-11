@@ -1,15 +1,15 @@
 
 export const genPathControllerMap = (controller: any, prefix: string, maxDeep = 10) => {
-  const map = {} as Record<string, Function>
-  const readCon = (con: any, pre: string, deep: number) => {
+  const fnMap = new Map<string, Function>()
+  const readController = (con: any, pre: string, deep: number) => {
     Object.keys(con).forEach(key => {
       if (typeof con[key] === 'function') {
-        map[pre + key] = con[key]
+        fnMap.set(pre + key, con[key])
       } else if (typeof con[key] === 'object' && deep <= maxDeep) {
-        readCon(con[key], pre + key + '/', deep + 1)
+        readController(con[key], pre + key + '/', deep + 1)
       }
     })
   }
-  readCon(controller, prefix, 1)
-  return map
+  readController(controller, prefix, 1)
+  return fnMap
 }

@@ -6,7 +6,9 @@
   "main": "./src/controller/index.ts",
   "scripts": {
     "dev": "node --watch --loader=ts-node/esm src/main.ts",
-    "debug": "node --inspect --watch --loader=ts-node/esm src/main.ts"
+    "debug": "node --inspect --watch --loader=ts-node/esm src/main.ts",
+    "start": "node --loader=ts-node/esm src/main.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

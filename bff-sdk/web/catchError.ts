@@ -1,38 +1,30 @@
 import { ApiError, NetError } from "./error";
 
-export const catchApiError = (fn: (err: ApiError) => void, preventDefault = false) => {
-  window.addEventListener("unhandledrejection", (event) => {
-    if (event.reason instanceof ApiError) {
-      if (preventDefault) {
-        // 增加阻止默认事件，阻止页面报错
-        event.preventDefault();
-      }
-      fn(event.reason)
-    }
-  });
+
+type CatchType = 'bubble' | 'focus'
+
+
+export class BffErrorEvent extends Event {
+  reason: ApiError | NetError
+  constructor(reason: ApiError | NetError) {
+    super('bffapirejection')
+    this.reason = reason
+  }
 }
 
-export const catchNetError = (fn: (err: NetError) => void, preventDefault = false) => {
-  window.addEventListener("unhandledrejection", (event) => {
-    if (event.reason instanceof NetError) {
-      if (preventDefault) {
-        // 增加阻止默认事件，阻止页面报错
-        event.preventDefault();
-      }
+const dispatchBffErrorEvent = (fn: (err: ApiError | NetError) => void) => {
+  return (event?: any) => {
+    if (event?.reason instanceof ApiError || event?.reason instanceof NetError) {
       fn(event.reason)
     }
-  });
+  }
 }
 
-export const catchApiOrNetError = (fn: (err: ApiError | NetError) => void, preventDefault = false) => {
-  window.addEventListener("unhandledrejection", (event) => {
-    if (event.reason instanceof ApiError || event.reason instanceof NetError) {
-      if (preventDefault) {
-        // 增加阻止默认事件，阻止页面报错
-        event.preventDefault();
-      }
-      fn(event.reason)
-    }
-  });
-}
 
+export const catchBffError = (fn: (err: ApiError | NetError) => void, catchType: CatchType = 'bubble') => {
+  if (catchType === 'bubble') {
+    window.addEventListener("unhandledrejection", dispatchBffErrorEvent(fn));
+  } else if (catchType === 'focus') {
+    window.addEventListener("bffapirejection", dispatchBffErrorEvent(fn));
+  }
+}

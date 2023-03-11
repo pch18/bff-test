@@ -6,10 +6,11 @@
     "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",
-    "sourceMap": true,
+    "sourceMap": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "outDir": "dist"
   },
   "include": ["src", "src/controller/user/index.ts"],
   "ts-node": {

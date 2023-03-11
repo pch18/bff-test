@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./App.css";
 import api from "api";
-import { skipErrorEvent } from "@bff-sdk/web/bffRequest";
 
 function App() {
   const [users, setUsers] = useState("");
@@ -12,7 +11,6 @@ function App() {
       <button
         onClick={async (u) => {
           const resp = await api.user.getAllUsers();
-          const resp2 = await skipErrorEvent(api).user.getAllUsers()
           setUsers(JSON.stringify(resp));
         }}
       >

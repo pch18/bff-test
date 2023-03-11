@@ -5,8 +5,8 @@
   "type": "module",
   "main": "./index.js",
   "scripts": {
-    "build": "tsc",
-    "publish": "tsc && npm publish --registry=https://registry.npmjs.org --access public"
+    "build": "rm -f *.d.ts *.js *.map && tsc",
+    "publish": "npm run build && npm publish --registry=https://registry.npmjs.org --access public"
   },
   "keywords": [],
   "author": "pch18",
