@@ -1,12 +1,12 @@
 {
   "name": "@bff-sdk/api",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
     "build": "rm -rf ./dist/* && tsc",
-    "publish": "npm run build && npm publish --registry=https://registry.npmjs.org --access public"
+    "pub": "npm run build && npm publish --registry=https://registry.npmjs.org --access public"
   },
   "keywords": [],
   "author": "",

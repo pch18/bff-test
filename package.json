@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm -F web dev & pnpm -F api dev",
-    "build:sdk": "pnpm -F @bff-sdk/api build & pnpm -F @bff-sdk/web build"
+    "sdk:build": "pnpm -F @bff-sdk/api build & pnpm -F @bff-sdk/web build",
+    "sdk:pub": "pnpm -F @bff-sdk/api pub & pnpm -F @bff-sdk/web pub"
   },
   "keywords": [],
   "author": "",

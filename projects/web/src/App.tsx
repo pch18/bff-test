@@ -1,31 +1,43 @@
-import { useState } from "react";
-import "./App.css";
-import api from "api";
+import { Router, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterLayout } from "./components/RouterLayout";
+import SiteList from "./pages/SiteList";
+import Home from "./pages/Home";
+import SiteDetail from "./pages/SiteDetail";
+import NiceModal from "@ebay/nice-modal-react";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <RouterLayout
+        menuItems={[
+          { path: "/", name: "概览" },
+          { path: "/site", name: "站点" },
+        ]}
+      />
+    ),
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "/site",
+        element: <SiteList />,
+      },
+      {
+        path: "/site/:siteId",
+        element: <SiteDetail />,
+      },
+    ],
+  },
+]);
 
 function App() {
-  const [users, setUsers] = useState("");
-  const [name, setName] = useState("");
   return (
-    <div className="App">
-      {users}
-      <button
-        onClick={async (u) => {
-          const resp = await api.user.getAllUsers();
-          setUsers(JSON.stringify(resp));
-        }}
-      >
-        fetch
-      </button>
-
-      <input onChange={(e) => setName(e.target.value)} value={name}></input>
-      <button
-        onClick={async (u) => {
-          await api.user.addUser2(name)
-        }}
-      >
-        add
-      </button>
-    </div>
+    <NiceModal.Provider>
+      <RouterProvider router={router} />
+    </NiceModal.Provider>
   );
 }
 
