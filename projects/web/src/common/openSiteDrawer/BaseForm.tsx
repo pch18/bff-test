@@ -10,18 +10,17 @@ export const BaseForm: React.FC = () => {
       <Form.Item label="域名" field="domain" rules={[{ required: true }]}>
         <Input.TextArea
           placeholder={
-            "xx.com 默认https 可指定: 端口 / 协议 / 泛域名\n例: xx.com:88, http://xx.com, *.xx.com"
+            "xx.com 一行一条 可指定: 端口 / 协议 / 泛域名\n例: xx.com:88, http://xx.com, *.xx.com"
           }
           autoSize={true}
         />
       </Form.Item>
+
       <Form.Item label="根目录" field="homeDir" rules={[{ required: true }]}>
         <Input placeholder="项目的根目录路径" />
       </Form.Item>
-      <Form.Item
-        label="仓库地址"
-        field="gitAddress"
-      >
+
+      <Form.Item label="仓库地址" field="gitAddress">
         <Input placeholder="通过此地址自动 clone / pull 代码" />
       </Form.Item>
 
@@ -47,6 +46,7 @@ export const BaseForm: React.FC = () => {
           </Form.Item>
         </>
       )}
+      
       <Form.Item label="备注" field="note">
         <Input.TextArea
           placeholder={`自定义备注描述 (可换行)`}

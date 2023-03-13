@@ -29,6 +29,7 @@ enum SiteServiceType {
   Static = "Static",
   Spa = "Spa",
   Fixed = "Fixed",
+  Redirect = "Redirect",
   Php = "Php",
   Proxy = "Proxy",
 }
@@ -78,6 +79,15 @@ interface FixedSiteService extends BaseSiteService {
   entryPath: string;
 }
 
+/** 重定向 */
+interface RedirectSiteService extends BaseSiteService {
+  type: SiteServiceType.Redirect;
+  /** 永久重定向301, 临时重定向302 */
+  redirectType: 301 | 302;
+  /** 重定向URL */
+  targetUrl: string;
+}
+
 /** php服务的地址 */
 interface PhpSiteService extends BaseSiteService {
   type: SiteServiceType.Php;
@@ -97,5 +107,7 @@ interface ProxySiteService extends BaseSiteService {
 type SiteService =
   | StaticSiteService
   | SpaSiteService
+  | FixedSiteService
+  | RedirectSiteService
   | PhpSiteService
   | ProxySiteService;

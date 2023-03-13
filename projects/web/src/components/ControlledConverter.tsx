@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface PropsControlledConvert<InData, OutData> {
   input: (outData: OutData | undefined) => InData | undefined;
@@ -9,12 +9,12 @@ interface PropsControlledConvert<InData, OutData> {
 }
 
 export const ControlledConverter = <InData, OutData>(
-  props: PropsControlledConvert<InData, OutData>,
+  props: PropsControlledConvert<InData, OutData>
 ) => {
   const { input, output, value, onChange, children, ...otherProps } = props;
   const cloneChild = React.cloneElement(children, {
     value: input(value),
-    onChange: inData => onChange?.(output(inData)),
+    onChange: (inData: InData | undefined) => onChange?.(output(inData)),
     ...otherProps,
   });
   return cloneChild;
