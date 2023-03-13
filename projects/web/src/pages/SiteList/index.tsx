@@ -42,14 +42,14 @@ export default function () {
     };
   });
   useEffect(() => {
-    openSiteDrawer({ siteKey: "123" });
+    openSiteDrawer({ isCreate: true });
   }, []);
   return (
     <div className="p-4">
       <div className="mb-3">
         <Button
           onClick={async () => {
-            console.log(await openSiteDrawer({ siteKey: "123" }));
+            console.log(await openSiteDrawer({ isCreate: true }));
           }}
         >
           新建站点

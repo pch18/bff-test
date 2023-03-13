@@ -10,14 +10,14 @@ interface SiteInfo {
 }
 
 export const openSiteDrawer = createNiceModal<
-  { siteKey: string } | { isCreate: true },
+  { siteKey: string, isCreate?: false } | { siteKey?: undefined, isCreate: true },
   { siteInfo: SiteInfo }
->(({ _modal, ...props }) => {
+>(({ _modal, siteKey, isCreate = false }) => {
   const { data: siteInfo } = useRequest(async () => {
-    if ("siteKey" in props) {
+    if (siteKey) {
       return {
         id: 1,
-        siteKey: props.siteKey + "++++",
+        siteKey: siteKey + "++++",
       };
     } else {
       return undefined;
@@ -35,31 +35,29 @@ export const openSiteDrawer = createNiceModal<
         });
       }}
       title={<span>站点信息</span>}
-      // className="min-w-[500px] !w-1/2"
-      width={500}
+      className="min-w-[500px] !w-1/2"
     >
       <Form form={form} labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
         <Tabs defaultActiveTab="base">
           <Tabs.TabPane key="base" title="基本">
-            <BaseForm form={form} />
+            <BaseForm form={form} isCreate={isCreate} />
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="service" title="服务">
+          <Tabs.TabPane key="service" title="服务" disabled={isCreate}>
             服务配置
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="cert" title="SSL" disabled>
+          <Tabs.TabPane key="cert" title="证书" disabled={isCreate}>
             证书配置
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="rewrite" title="Rewrite" disabled>
+          <Tabs.TabPane key="rewrite" title="伪静态" disabled={isCreate}>
             Rewrite
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="caddy" title="Caddy" disabled>
+          <Tabs.TabPane key="caddy" title="配置预览" disabled={isCreate}>
             配置预览
           </Tabs.TabPane>
-
 
         </Tabs>
       </Form>
