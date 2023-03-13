@@ -1,6 +1,8 @@
-import { Button, Drawer } from "@arco-design/web-react";
+import { Button, Drawer, Form, Input } from "@arco-design/web-react";
 import { createNiceModal } from "../../utils/nicemodel";
 import { useRequest } from "ahooks";
+import { BaseForm } from "./BaseForm";
+import useForm from "@arco-design/web-react/es/Form/useForm";
 
 interface SiteInfo {
   id: number;
@@ -22,6 +24,8 @@ export const openSiteDrawer = createNiceModal<
     }
   }, {});
 
+  const [form] = useForm();
+
   return (
     <Drawer
       {..._modal.props}
@@ -30,6 +34,16 @@ export const openSiteDrawer = createNiceModal<
           siteInfo: { id: 99, siteKey: "3333", ...siteInfo },
         });
       }}
-    ></Drawer>
+      title={<span>站点信息</span>}
+      // className="min-w-[500px] !w-1/2"
+      width={500}
+    >
+      <Form
+        form={form}
+        labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}
+      >
+        <BaseForm />
+      </Form>
+    </Drawer>
   );
 });

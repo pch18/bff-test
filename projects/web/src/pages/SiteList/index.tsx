@@ -4,8 +4,9 @@ import {
   Table,
   TableColumnProps,
 } from "@arco-design/web-react";
-import { openSiteDrawer } from "../../common/SiteDetailModel";
+import { openSiteDrawer } from "../../common/openSiteDrawer";
 import { useAntdTable, useRequest } from "ahooks";
+import { useEffect } from "react";
 
 const columns: TableColumnProps[] = [
   {
@@ -40,6 +41,9 @@ export default function () {
       list: [{ name: 1 }],
     };
   });
+  useEffect(() => {
+    openSiteDrawer({ siteKey: "123" });
+  }, []);
   return (
     <div className="p-4">
       <div className="mb-3">
