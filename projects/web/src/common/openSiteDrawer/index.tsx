@@ -39,28 +39,28 @@ export const openSiteDrawer = createNiceModal<
       width={500}
     >
       <Form form={form} labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
-        <Tabs defaultActiveTab="1">
-          <Tabs.TabPane key="base" title="基本信息">
-            <BaseForm />
+        <Tabs defaultActiveTab="base">
+          <Tabs.TabPane key="base" title="基本">
+            <BaseForm form={form} />
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="service" title="服务配置">
+          <Tabs.TabPane key="service" title="服务">
             服务配置
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="cert" title="证书配置" disabled>
+          <Tabs.TabPane key="cert" title="SSL" disabled>
             证书配置
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="cert" title="Rewrite" disabled>
+          <Tabs.TabPane key="rewrite" title="Rewrite" disabled>
             Rewrite
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="caddy" title="配置预览" disabled>
+          <Tabs.TabPane key="caddy" title="Caddy" disabled>
             配置预览
           </Tabs.TabPane>
 
-          
+
         </Tabs>
       </Form>
     </Drawer>
