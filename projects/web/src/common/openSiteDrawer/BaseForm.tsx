@@ -1,11 +1,7 @@
-import { Button, Form, FormInstance, Grid, Input, Select } from "@arco-design/web-react";
-import { IconMinus, IconPlus } from "@arco-design/web-react/icon";
-import { ControlledInheritor } from "../../components/ControlledInheritor";
-import { useRef, useState } from "react";
+import { Form, FormInstance, Grid, Input, Select, Switch } from "@arco-design/web-react";
+import { useRef } from "react";
 import { useRequest } from "ahooks";
 import api from 'api'
-import { SelectObjectMultiple } from "../../components/SelectObjectMultiple";
-import { SelectObject } from "../../components/SelectObject";
 
 const validateDomain = (domain?: string) => domain?.match(/^(https?:\/\/)?([a-z0-9\u4e00-\u9fa5]+\.)+[a-z0-9\u4e00-\u9fa5]+$/)
 export const BaseForm: React.FC<{ form: FormInstance, isCreate: boolean }> = ({ form, isCreate }) => {
@@ -97,23 +93,40 @@ export const BaseForm: React.FC<{ form: FormInstance, isCreate: boolean }> = ({ 
         <Input placeholder="通过此地址自动 clone / pull 代码" onBlur={handleGitAddressBlur} />
       </Form.Item>
 
-      <Form.Item noStyle shouldUpdate>
-        {(formData, form) => !(reqGitBranchInfo.loading || reqGitBranchInfo.data) ? null :
-          <Form.Item
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 15 }}
-            label="分支"
-            field="gitBranch"
-            rules={[{ required: true }]}
-          >
-            <Select
-              showSearch={true}
-              loading={reqGitBranchInfo.loading}
-              disabled={reqGitBranchInfo.loading}
-              options={reqGitBranchInfo.data?.branchs.map(b => b.branchName) || []} />
-          </Form.Item>
-        }
-      </Form.Item>
+      {!(reqGitBranchInfo.loading || reqGitBranchInfo.data) ? null :
+        <>
+          <Grid.Row>
+            <Grid.Col offset={4} span={12}>
+              <Form.Item
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                label="分支"
+                field="gitBranch"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  showSearch={true}
+                  loading={reqGitBranchInfo.loading}
+                  disabled={reqGitBranchInfo.loading}
+                  options={reqGitBranchInfo.data?.branchs?.map(b => ({ value: b.branchName, label: b.branchName === reqGitBranchInfo.data?.headBranchName ? `${b.branchName} (默认)` : b.branchName })) || []} />
+              </Form.Item>
+            </Grid.Col>
+            <Grid.Col span={5}>
+              <Form.Item
+                labelCol={{ span: 23 }}
+                wrapperCol={{ span: 1 }}
+                label="自动Pull"
+                field="gitAutoPull"
+                rules={[{ required: true }]}
+              >
+                <Switch />
+              </Form.Item>
+            </Grid.Col>
+          </Grid.Row>
+
+        </>
+      }
+
 
 
       <Form.Item label="备注" field="note">
@@ -121,6 +134,7 @@ export const BaseForm: React.FC<{ form: FormInstance, isCreate: boolean }> = ({ 
           placeholder={"自定义备注描述\n支持输入多行"}
           autoSize={true}
         />
+        
       </Form.Item>
     </>
   );
