@@ -1,13 +1,11 @@
-import Koa from 'koa';
-import controller from './controller'
-import { createBffLoader } from '@bff-sdk/api'
-import Bodyparser from 'koa-bodyparser'
+import Koa from "koa";
+import controller from "./controller";
+import { createBffLoader } from "@bff-sdk/api";
+import Bodyparser from "koa-bodyparser";
 
+const app = new Koa();
 
-const app = new Koa()
-
-
-app.use(createBffLoader(controller))
+app.use(createBffLoader(controller));
 
 // app.use((ctx, next) => {
 //   ctx.body = 'xxx';
@@ -22,5 +20,4 @@ app.use(createBffLoader(controller))
 //   ctx.body = ctx.request.body
 // })
 
-app.listen(7016)
-
+app.listen(7016);

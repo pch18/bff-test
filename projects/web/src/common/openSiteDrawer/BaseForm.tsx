@@ -25,11 +25,9 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
     },
     { manual: true }
   );
-
   const handleGitAddressBlur = async () => {
     const hasError = form.getFieldError("gitAddress");
     const gitAddress = form.getFieldValue("gitAddress");
-
     if (hasError != null || !gitAddress) {
       reqGitBranchInfo.mutate();
       form.setFieldValue("gitBranch", "");
@@ -61,7 +59,7 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
           },
           {
             validator(value: string | undefined, callback) {
-              const domainList = value?.split("\n") != null || [];
+              const domainList = value?.split("\n") ?? [];
               const faildDomainList = domainList.filter(
                 (d) => validateDomain(d) == null
               );
@@ -98,7 +96,7 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
               .join("\n");
             if (domains !== trimDomains) {
               form.setFieldValue("domains", trimDomains);
-              form.validate(["domains"]);
+              void form.validate(["domains"]);
             }
           }}
         />
@@ -112,9 +110,11 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
       >
         <Input
           placeholder="项目主目录路径"
-          onChange={(t) => (rootDirChangedRef.current = !!t)}
+          onChange={(t) => (rootDirChangedRef.current = Boolean(t))}
           prefix="/apps/"
           onBlur={() => {
+            const a = Boolean("1");
+
             if (form.getFieldValue("rootDir")) {
               return;
             }
@@ -172,7 +172,7 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
                         b.branchName === reqGitBranchInfo.data?.headBranchName
                           ? `${b.branchName} (默认)`
                           : b.branchName,
-                    })) != null || []
+                    })) ?? []
                   }
                 />
               </Form.Item>

@@ -10,7 +10,8 @@ interface SiteInfo {
 }
 
 export const openSiteDrawer = createNiceModal<
-  { siteKey: string, isCreate?: false } | { siteKey?: undefined, isCreate: true },
+  | { siteKey: string; isCreate?: false }
+  | { siteKey?: undefined; isCreate: true },
   { siteInfo: SiteInfo }
 >(({ _modal, siteKey, isCreate = false }) => {
   const { data: siteInfo } = useRequest(async () => {
@@ -62,7 +63,6 @@ export const openSiteDrawer = createNiceModal<
           <Tabs.TabPane key="caddy" title="配置预览" disabled={isCreate}>
             配置预览
           </Tabs.TabPane>
-
         </Tabs>
       </Form>
     </Drawer>
