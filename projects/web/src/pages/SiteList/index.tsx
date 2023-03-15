@@ -2,7 +2,7 @@ import {
   Button,
   Drawer,
   Table,
-  TableColumnProps,
+  type TableColumnProps,
 } from "@arco-design/web-react";
 import { openSiteDrawer } from "../../common/openSiteDrawer";
 import { useAntdTable, useRequest } from "ahooks";
@@ -42,14 +42,15 @@ export default function () {
     };
   });
   useEffect(() => {
-    openSiteDrawer({ isCreate: true });
+    void openSiteDrawer({ siteKey: "1" });
   }, []);
   return (
     <div className="p-4">
       <div className="mb-3">
         <Button
           onClick={async () => {
-            console.log(await openSiteDrawer({ isCreate: true }));
+            const a = await openSiteDrawer({ isCreate: true });
+            console.log(a);
           }}
         >
           新建站点

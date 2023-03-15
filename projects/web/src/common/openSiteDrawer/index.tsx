@@ -43,6 +43,10 @@ export const openSiteDrawer = createNiceModal<
             <BaseForm form={form} isCreate={isCreate} />
           </Tabs.TabPane>
 
+          <Tabs.TabPane key="cert" title="构建" disabled={isCreate}>
+            构建配置
+          </Tabs.TabPane>
+
           <Tabs.TabPane key="service" title="服务" disabled={isCreate}>
             服务配置
           </Tabs.TabPane>
