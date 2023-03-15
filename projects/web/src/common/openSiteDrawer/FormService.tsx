@@ -11,10 +11,7 @@ import { useRef } from "react";
 import { useRequest } from "ahooks";
 import api from "api";
 
-export const BuildForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
-  form,
-  isCreate,
-}) => {
+export const FormService: React.FC = ({}) => {
   return (
     <>
       <Collapse accordion>
@@ -22,9 +19,9 @@ export const BuildForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
           {(fields, { add, remove, move }) =>
             fields.map((item, index) => (
               <Collapse.Item
-                key="1"
-                header="Beijing Toutiao Technology Co., Ltd."
-                name="1"
+                key={item.key}
+                name={item.field}
+                header={`${fields[item.key].field}`}
               >
                 Beijing Toutiao Technology Co., Ltd.
               </Collapse.Item>

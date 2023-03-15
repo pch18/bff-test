@@ -1,33 +1,34 @@
-import {
-  Form,
-  type FormInstance,
-  Grid,
-  Input,
-  Select,
-  Switch,
-} from "@arco-design/web-react";
-import { useRef } from "react";
+import { Form, Grid, Input, Select, Switch } from "@arco-design/web-react";
+import { useEffect, useRef } from "react";
 import { useRequest } from "ahooks";
 import api from "api";
+import useForm from "@arco-design/web-react/es/Form/useForm";
+import { initSiteFormBasic, type SiteFormBasic } from "./interface";
+import { useFormUtils } from "../../hooks/useFormData";
+import { isEqual } from "lodash-es";
 
 const validateDomain = (domain?: string) =>
   domain?.match(
     /^(https?:\/\/)?([a-z0-9\u4e00-\u9fa5]+\.)+[a-z0-9\u4e00-\u9fa5]+$/
   );
-export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
-  form,
-  isCreate,
-}) => {
+
+export const FormBasic: React.FC<{ isCreate: boolean }> = ({ isCreate }) => {
+  const [form] = useForm<SiteFormBasic>();
+  const fu = useFormUtils(form);
   const reqGitBranchInfo = useRequest(
     async () => {
-      const gitAddress = form.getFieldValue("gitAddress");
+      const gitAddress = fu.getValue((f) => f.gitAddress);
       return await api.git.fetchGitBranchInfo(gitAddress);
     },
     { manual: true }
   );
+
+  const domains = fu.getValue((f) => f.domains);
+  console.log({ domains });
+
   const handleGitAddressBlur = async () => {
     const hasError = form.getFieldError("gitAddress");
-    const gitAddress = form.getFieldValue("gitAddress");
+    const gitAddress = fu.getValue((f) => f.gitAddress);
     if (hasError != null || !gitAddress) {
       reqGitBranchInfo.mutate();
       form.setFieldValue("gitBranch", "");
@@ -48,7 +49,12 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
   };
   const rootDirChangedRef = useRef(!isCreate);
   return (
-    <>
+    <Form
+      form={form}
+      labelCol={{ span: 5 }}
+      wrapperCol={{ span: 18 }}
+      initialValues={initSiteFormBasic()}
+    >
       <Form.Item
         label="域名"
         field="domains"
@@ -58,8 +64,8 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
             message: "请填写域名",
           },
           {
-            validator(value: string | undefined, callback) {
-              const domainList = value?.split("\n") ?? [];
+            validator(data: any, callback) {
+              const domainList = data as string[];
               const faildDomainList = domainList.filter(
                 (d) => validateDomain(d) == null
               );
@@ -81,6 +87,12 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
             },
           },
         ]}
+        formatter={(text) => {
+          return text.join("\n");
+        }}
+        normalize={(input) => {
+          return input.split("\n");
+        }}
       >
         <Input.TextArea
           placeholder={
@@ -88,13 +100,11 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
           }
           autoSize={true}
           onBlur={() => {
-            const domains = form.getFieldValue("domains") as string | undefined;
-            const trimDomains = domains
-              ?.split("\n")
+            const originDomains = fu.getValue((f) => f.domains);
+            const trimDomains = originDomains
               .map((line) => line.replace(/\s+/g, ""))
-              .filter(Boolean)
-              .join("\n");
-            if (domains !== trimDomains) {
+              .filter(Boolean);
+            if (!isEqual(originDomains, trimDomains)) {
               form.setFieldValue("domains", trimDomains);
               void form.validate(["domains"]);
             }
@@ -113,12 +123,10 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
           onChange={(t) => (rootDirChangedRef.current = Boolean(t))}
           prefix="/apps/"
           onBlur={() => {
-            const a = Boolean("1");
-
-            if (form.getFieldValue("rootDir")) {
+            if (fu.getValue((f) => f.rootDir)) {
               return;
             }
-            const [domain] = form.getFieldValue("domains")?.split("\n") || [];
+            const [domain] = fu.getValue("domains");
             if (validateDomain(domain) != null) {
               form.setFieldValue("rootDir", domain);
             }
@@ -198,6 +206,6 @@ export const BaseForm: React.FC<{ form: FormInstance; isCreate: boolean }> = ({
           autoSize={true}
         />
       </Form.Item>
-    </>
+    </Form>
   );
 };
