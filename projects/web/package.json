@@ -13,6 +13,7 @@
     "@bff-sdk/web": "workspace:*",
     "@ebay/nice-modal-react": "^1.2.9",
     "ahooks": "^3.7.2",
+    "hox": "^2.1.0",
     "lodash-es": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -33,6 +34,7 @@
     "tailwindcss": "^3.2.7",
     "typescript": "^4.6.4",
     "vite": "^3.1.0",
-    "vite-plugin-inspect": "^0.7.7"
+    "vite-plugin-inspect": "^0.7.7",
+    "vite-tsconfig-paths": "^4.0.7"
   }
 }

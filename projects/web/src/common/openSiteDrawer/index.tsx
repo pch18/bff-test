@@ -1,53 +1,36 @@
 import { Drawer, Tabs } from "@arco-design/web-react";
 import { createNiceModal } from "../../utils/nicemodel";
-import { useRequest } from "ahooks";
-import { FormBasic } from "./FormBasic";
-import { FormService } from "./FormService";
-import { type SiteFormBasic } from "./interface";
+import { PanelBasic } from "./PanelBasic";
+import { PanelService } from "./PanelService";
+import { PanelBuild } from "./PanelBuild";
+import { type FC } from "react";
+import {
+  SiteDrawerStoreProvider,
+  useSiteDrawerStore,
+} from "./useSiteDrawerStore";
 
-interface SiteInfo {
-  id: number;
-  siteKey: string;
-}
-
-export const openSiteDrawer = createNiceModal<
-  | { siteKey: string; isCreate?: false }
-  | { siteKey?: undefined; isCreate: true },
-  { siteFormBasic: SiteFormBasic }
->(({ _modal, siteKey, isCreate = false }) => {
-  const { data: siteInfo } = useRequest(async () => {
-    if (siteKey) {
-      return {
-        id: 1,
-        siteKey: siteKey + "++++",
-      };
-    } else {
-      return undefined;
-    }
-  }, {});
-
+const SiteDrawer: FC = () => {
+  const { _modal, isCreate } = useSiteDrawerStore();
   return (
     <Drawer
       {..._modal.props}
       onOk={() => {
-        _modal.resolve({
-          siteFormBasic: {} as any,
-        });
+        _modal.resolve();
       }}
       title={<span>站点信息</span>}
       className="min-w-[500px] !w-1/2"
     >
       <Tabs defaultActiveTab="base">
         <Tabs.TabPane key="base" title="基本">
-          <FormBasic isCreate={isCreate} />
+          <PanelBasic />
         </Tabs.TabPane>
 
         <Tabs.TabPane key="build" title="构建" disabled={isCreate}>
-          <FormService />
+          <PanelBuild />
         </Tabs.TabPane>
 
         <Tabs.TabPane key="service" title="服务" disabled={isCreate}>
-          服务配置
+          <PanelService />
         </Tabs.TabPane>
 
         <Tabs.TabPane key="cert" title="证书" disabled={isCreate}>
@@ -63,5 +46,20 @@ export const openSiteDrawer = createNiceModal<
         </Tabs.TabPane>
       </Tabs>
     </Drawer>
+  );
+};
+
+export const openSiteDrawer = createNiceModal<
+  { siteId: number; isCreate?: false } | { siteId?: undefined; isCreate: true },
+  undefined
+>(({ _modal, siteId, isCreate = false }) => {
+  return (
+    <SiteDrawerStoreProvider
+      isCreate={isCreate}
+      siteId={siteId}
+      _modal={_modal}
+    >
+      <SiteDrawer />
+    </SiteDrawerStoreProvider>
   );
 });

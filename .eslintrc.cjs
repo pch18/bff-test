@@ -10,6 +10,7 @@ module.exports = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
+  // 0屏蔽，1警报，2错误
   rules: {
     // 开启 prettier 报错
     "prettier/prettier": 2,
@@ -25,6 +26,12 @@ module.exports = {
     "no-implicit-coercion": 2,
     // 不可以在条件判断中使用any类型
     "@typescript-eslint/strict-boolean-expressions": 0,
+    // 不可以在代码里使用console
+    "no-console": [2, { allow: ["info", "warn", "error"] }],
+    // 使用 ?? 代替 ||
+    "@typescript-eslint/prefer-nullish-coalescing": 0,
+    // 禁止使用空children <Xxx></Xxx>，使用 <Xxx /> 代替
+    "react/self-closing-comp": 2,
   },
   root: true,
 };

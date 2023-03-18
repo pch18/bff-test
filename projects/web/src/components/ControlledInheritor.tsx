@@ -5,7 +5,8 @@ export const ControlledInheritor: React.FC<{
   [x: string]: any;
 }> = ({ children, ...otherProps }) => {
   if (isReactElement(children)) {
-    const othterEvent = {} as Record<string, () => any>;
+    const othterEvent: Record<string, () => any> = {};
+
     if (children.props.onClick && otherProps.onClick) {
       othterEvent.onClick = async (...args) => {
         await otherProps.onClick(...args);

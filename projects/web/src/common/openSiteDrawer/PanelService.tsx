@@ -11,7 +11,7 @@ import { useRef } from "react";
 import { useRequest } from "ahooks";
 import api from "api";
 
-export const FormService: React.FC = ({}) => {
+export const PanelService: React.FC = ({}) => {
   return (
     <>
       <Collapse accordion>
