@@ -1,1 +1,1 @@
-export const test = 1;
+export const getSiteInfo = (siteId: number) => {};

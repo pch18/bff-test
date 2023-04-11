@@ -1,12 +1,8 @@
-import { Form, Grid, Input, Select, Switch } from "@arco-design/web-react";
-import { createElement, useEffect, useMemo, useRef } from "react";
-import { useRequest } from "ahooks";
-import api from "api";
-import { initFormBasic, type IFormBasic } from "./interface";
+import { Form, Input } from "@arco-design/web-react";
+import { useRef } from "react";
 import { isEqual } from "lodash-es";
-import { useFormUtils } from "@src/components/AForm/useFormUtils";
-import { useFormItem } from "@src/components/AForm/useFormItem";
-import { useSiteDrawerStore } from "./useSiteDrawerStore";
+import { useSiteDrawerStore } from "./utils/useSiteDrawerStore";
+import { useFormItem } from "@/components/AForm";
 
 const validateDomain = (domain?: string) =>
   Boolean(
@@ -16,9 +12,12 @@ const validateDomain = (domain?: string) =>
   );
 
 export const PanelBasic: React.FC = () => {
-  const { formBasic: form, isCreate } = useSiteDrawerStore();
-  const fu = useFormUtils(form);
-  const FI = useFormItem(form);
+  const { fu, formIns, isCreate } = useSiteDrawerStore();
+
+  const FI = useFormItem(formIns, {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 17 },
+  });
 
   /** 记录根目录是否人工修改过，就不自动填充了 */
   const rootDirChangedRef = useRef(!isCreate);
@@ -35,7 +34,7 @@ export const PanelBasic: React.FC = () => {
       );
     }
     // 更新，如果 rootDir 为空，则自动写入根目录地址
-    if (!fu.getValue("rootDir").trim()) {
+    if (!fu.getValue("homeDir").trim()) {
       rootDirChangedRef.current = false;
     }
     // 如果第一行校验是通过的，则自动将第一行域名作为根目录地址
@@ -44,7 +43,7 @@ export const PanelBasic: React.FC = () => {
       domainList?.[0] &&
       validateDomain(domainList[0])
     ) {
-      fu.setValue("rootDir", domainList[0]);
+      fu.setValue("homeDir", domainList[0]);
     }
   };
 
@@ -57,33 +56,28 @@ export const PanelBasic: React.FC = () => {
     if (!isEqual(originDomains, trimDomains)) {
       fu.setValue("domains", trimDomains);
       // setvalue之后，不validate的话，会清除报错信息
-      void form.validate(["domains"]);
+      void formIns.validate(["domains"]);
     }
   };
 
   // 在 rootDir 输入框 blur 时，输入框内若未填写，则自动填充 domains 第一条信息
   const handleRootDirBlur = () => {
-    const originRootDir = fu.getValue("rootDir");
+    const originRootDir = fu.getValue("homeDir");
     const trimRootDir = originRootDir.replace(/\s+/g, "");
     if (trimRootDir) {
       if (trimRootDir !== originRootDir) {
-        fu.setValue("rootDir", trimRootDir);
+        fu.setValue("homeDir", trimRootDir);
       }
     } else {
       const [domain] = fu.getValue("domains");
       if (validateDomain(domain)) {
-        fu.setValue("rootDir", domain);
+        fu.setValue("homeDir", domain);
       }
     }
   };
 
   return (
-    <Form
-      form={form}
-      labelCol={{ span: 5 }}
-      wrapperCol={{ span: 18 }}
-      initialValues={initFormBasic()}
-    >
+    <>
       <FI
         field="domains"
         label="域名"
@@ -91,8 +85,8 @@ export const PanelBasic: React.FC = () => {
           { required: true, message: "请填写域名" },
           { validator: handleDomainsValidator },
         ]}
-        normalize={(widgetValue: string) => widgetValue.split("\n")}
-        formatter={(fieldValue) => fieldValue.join("\n")}
+        output={(widgetValue: string) => widgetValue.split("\n")}
+        input={(fieldValue) => fieldValue.join("\n")}
       >
         <Input.TextArea
           placeholder={
@@ -104,10 +98,15 @@ export const PanelBasic: React.FC = () => {
       </FI>
 
       <FI
-        field="rootDir"
-        label="根目录"
-        rules={[{ required: true, message: "请填写根目录路径" }]}
-        formatter={(d) => d?.replace(/\s+/g, "")}
+        field="homeDir"
+        label="主目录"
+        rules={[{ required: true, message: "请填写主目录路径" }]}
+        output={(d: string) =>
+          d
+            .replace(/\/+/g, "/")
+            .replace(/^\//, "")
+            .replace(/[\s\\.]+/g, "")
+        }
       >
         <Input
           placeholder="项目主目录路径"
@@ -123,6 +122,6 @@ export const PanelBasic: React.FC = () => {
           autoSize={true}
         />
       </FI>
-    </Form>
+    </>
   );
 };

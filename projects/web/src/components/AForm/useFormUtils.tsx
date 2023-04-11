@@ -1,10 +1,9 @@
 import { type FormInstance } from "@arco-design/web-react";
-import { get } from "lodash-es";
 import { type SetValueFn, type GetValueFn } from "./interfaceGetFieldType";
 
-export const useFormUtils = <Data,>(form: FormInstance<Data>) => {
+export const useFormUtils = <IFormData,>(form: FormInstance<IFormData>) => {
   return {
-    getValue: form.getFieldValue as GetValueFn<Data>,
-    setValue: form.setFieldValue as SetValueFn<Data>,
+    getValue: form.getFieldValue as GetValueFn<IFormData>,
+    setValue: form.setFieldValue as SetValueFn<IFormData>,
   };
 };

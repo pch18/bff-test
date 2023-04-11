@@ -30,8 +30,8 @@ module.exports = {
     "no-console": [2, { allow: ["info", "warn", "error"] }],
     // 使用 ?? 代替 ||
     "@typescript-eslint/prefer-nullish-coalescing": 0,
-    // 禁止使用空children <Xxx></Xxx>，使用 <Xxx /> 代替
-    "react/self-closing-comp": 2,
+    // 自动合并相同import路径的不同值
+    "@typescript-eslint/no-duplicate-imports": 2,
   },
   root: true,
 };

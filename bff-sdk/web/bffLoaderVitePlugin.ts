@@ -24,7 +24,10 @@ export default function bffLoaderVitePlugin(opts: {
     name: 'bff',
     config: () => ({
       resolve: {
-        alias: { [controllerImportName]: '@bff-sdk/web/bffRequest' }
+        alias: [{
+          find: new RegExp(`^${controllerImportName}$`),
+          replacement: '@bff-sdk/web/bffRequest'
+        }]
       },
       define: {
         __BFF_API_PATH_PREFIX__: apiPathPrefix,

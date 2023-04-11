@@ -11,5 +11,7 @@ module.exports = {
     "react/display-name": 0,
     // 必须校验组件prop类型
     "react/prop-types": 0,
+    // 禁止使用空children <Xxx></Xxx>，使用 <Xxx /> 代替
+    "react/self-closing-comp": 2,
   },
 };
