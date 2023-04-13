@@ -27,7 +27,15 @@ export type SiteRouteConfig = {
 } & (
   | {
       /** 服务类型 */
-      type: "Static" | "Php";
+      type: "Static";
+      /** 访问目录 */
+      entryDir: string;
+      /** 允许浏览目录 */
+      canBrowse: boolean;
+    }
+  | {
+      /** 服务类型 */
+      type: "Php";
       /** 访问目录 */
       entryDir: string;
     }

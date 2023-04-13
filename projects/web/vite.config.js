@@ -9,7 +9,14 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [
     // Inspect(),
-    react(),
+    react({
+      babel: {
+        plugins: [
+          "babel-plugin-styled-windicss",
+          "babel-plugin-styled-components",
+        ],
+      },
+    }),
     bffLoaderVitePlugin({ apiDevPort: 7016 }),
     tsconfigPaths(),
   ],

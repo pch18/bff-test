@@ -32,6 +32,11 @@ module.exports = {
     "@typescript-eslint/prefer-nullish-coalescing": 0,
     // 自动合并相同import路径的不同值
     "@typescript-eslint/no-duplicate-imports": 2,
+    // 允许使用 /// 引用符号
+    "@typescript-eslint/triple-slash-reference": 0,
+    // 将字符串相加替换成模板字符串
+    "prefer-template": 2,
+    "no-useless-concat": 2,
   },
   root: true,
 };

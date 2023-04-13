@@ -13,11 +13,12 @@ export const [useSiteDrawerStore, SiteDrawerStoreProvider] = createStore(
   }) => {
     const formIns = useFormInstance<SiteConfig>(initSiteConfig);
     const fu = useFormUtils(formIns);
-
+    const rootDir = "/apps";
     return {
       ...initData,
       formIns,
       fu,
+      rootDir,
     };
   }
 );

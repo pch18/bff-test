@@ -4,25 +4,29 @@ import {
   Breadcrumb,
   Button,
   Message,
+  Switch,
 } from "@arco-design/web-react";
 import {
   IconHome,
   IconCalendar,
   IconCaretRight,
   IconCaretLeft,
+  IconMoon,
+  IconSun,
 } from "@arco-design/web-react/icon";
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { maxBy } from "lodash-es";
+import { useLocalStorageState } from "ahooks";
 
 export const RouterLayout: React.FC<{
-  menuItems: {
+  menuItems: Array<{
     path: string;
     /** 跳转地址,不填则同path */
     link?: string;
     name: string;
     icon?: React.ReactElement;
-  }[];
+  }>;
 }> = ({ menuItems }) => {
   const location = useLocation();
   const openMenu = useMemo(() => {
@@ -33,32 +37,44 @@ export const RouterLayout: React.FC<{
     return bestItem;
   }, [location]);
 
+  const [isDark, setIsDark] = useLocalStorageState<boolean>(
+    "page-use-dark-mode",
+    { defaultValue: false }
+  );
+  useLayoutEffect(() => {
+    document.body.setAttribute("arco-theme", isDark ? "dark" : "");
+  }, [isDark]);
+
   return (
-    <Layout className="layout-collapse-demo min-h-full">
-      <Layout.Sider collapsible>
-        <div className="logo h-16 bg-gray-500 mx-3 my-2" />
-        <Menu selectedKeys={openMenu ? [openMenu.path] : []}>
-          {menuItems.map((item) => (
-            <Link to={item.link ?? item.path} key={item.path}>
-              <Menu.Item key={item.path}>
-                {item.icon ?? <IconCalendar />}
-                {item.name}
-              </Menu.Item>
-            </Link>
-          ))}
-        </Menu>
-      </Layout.Sider>
+    <Layout className="min-h-full">
+      <Layout.Header className="h-12 bg-color-bg-2 shadow z-10 border-b border-color-border-2">
+        <Switch
+          checkedText={<IconMoon />}
+          uncheckedText={<IconSun />}
+          checked={isDark}
+          onChange={setIsDark}
+        />
+      </Layout.Header>
       <Layout>
-        {/* <Layout.Header>Header</Layout.Header> */}
-        <Layout>
-          <Layout.Content>
-            <Suspense>
-              <Outlet />
-            </Suspense>
-          </Layout.Content>
-          {/* <Layout.Footer>Footer</Layout.Footer> */}
-        </Layout>
+        <Layout.Sider>
+          <Menu selectedKeys={openMenu ? [openMenu.path] : []}>
+            {menuItems.map((item) => (
+              <Link to={item.link ?? item.path} key={item.path}>
+                <Menu.Item key={item.path}>
+                  {item.icon ?? <IconCalendar />}
+                  {item.name}
+                </Menu.Item>
+              </Link>
+            ))}
+          </Menu>
+        </Layout.Sider>
+        <Layout.Content>
+          <Suspense>
+            <Outlet />
+          </Suspense>
+        </Layout.Content>
       </Layout>
+      <Layout.Footer>统计分析</Layout.Footer>
     </Layout>
   );
 };

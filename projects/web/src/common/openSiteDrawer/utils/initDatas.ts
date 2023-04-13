@@ -21,7 +21,7 @@ export const initSiteConfig = (): SiteConfig => {
     domains: [],
     homeDir: "",
     note: "",
-    routeConfig: [initSiteRouteConfig("Static")],
+    routeConfig: [],
     serviceConfig: [],
     certConfig: [],
     rewriteConfig: [],
@@ -33,12 +33,12 @@ export const initSiteRouteConfig = (
 ): SiteRouteConfig => {
   const base = {
     id: uuid.v4(),
-    path: "/*",
+    path: "",
     matchType: "Wildcard",
   } as const;
   switch (type) {
     case "Static":
-      return { ...base, type: "Static", entryDir: "" };
+      return { ...base, type: "Static", entryDir: "", canBrowse: false };
     case "Php":
       return { ...base, type: "Php", entryDir: "" };
     case "Spa":

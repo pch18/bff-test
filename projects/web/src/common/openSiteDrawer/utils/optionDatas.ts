@@ -17,3 +17,12 @@ export const optionsOfRouteMatchType: SelectOptions<
 ];
 
 export const mapOfRouteMatchType = optionsToMap(optionsOfRouteMatchType);
+
+export const optionsOfRouteType: SelectOptions<SiteRouteConfig["type"]> = [
+  { value: "Static", label: "静态目录" },
+  { value: "Php", label: "PHP" },
+  { value: "Spa", label: "SPA" },
+  { value: "ReverseProxy", label: "反向代理" },
+  { value: "BindService", label: "绑定服务" },
+];
+export const mapOfRouteType = optionsToMap(optionsOfRouteType);

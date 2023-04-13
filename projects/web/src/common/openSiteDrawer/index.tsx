@@ -22,10 +22,10 @@ const SiteDrawer: FC = () => {
         }
       }}
       title={<span>站点信息</span>}
-      className="min-w-[500px] !w-1/2"
+      className="min-w-[600px] !w-1/2"
     >
       <Form form={formIns}>
-        <Tabs defaultActiveTab="service">
+        <Tabs defaultActiveTab="route">
           <Tabs.TabPane key="base" title="基本">
             <PanelBasic />
           </Tabs.TabPane>

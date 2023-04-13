@@ -12,7 +12,7 @@ const validateDomain = (domain?: string) =>
   );
 
 export const PanelBasic: React.FC = () => {
-  const { fu, formIns, isCreate } = useSiteDrawerStore();
+  const { fu, formIns, isCreate, rootDir } = useSiteDrawerStore();
 
   const FI = useFormItem(formIns, {
     labelCol: { span: 6 },
@@ -109,9 +109,14 @@ export const PanelBasic: React.FC = () => {
         }
       >
         <Input
-          placeholder="项目主目录路径"
+          css={`
+            input {
+              @apply !pl-0;
+            }
+          `}
+          placeholder=" 项目主目录路径"
           onChange={(t) => (rootDirChangedRef.current = Boolean(t))}
-          prefix="/apps/"
+          prefix={`${rootDir}/`}
           onBlur={handleRootDirBlur}
         />
       </FI>
