@@ -7,6 +7,8 @@ import {
 } from "api/src/controller/site/interface/SiteConfig";
 import * as uuid from "uuid";
 
+import dayjs from "dayjs";
+
 export {
   type SiteConfig,
   type SiteRouteConfig,
@@ -25,6 +27,7 @@ export const initSiteConfig = (): SiteConfig => {
     serviceConfig: [],
     certConfig: [],
     rewriteConfig: [],
+    createAt: dayjs().unix(),
   };
 };
 
@@ -53,11 +56,14 @@ export const initSiteRouteConfig = (
 export const initSiteServiceConfig = (): SiteServiceConfig => {
   return {
     id: uuid.v4(),
-    repoPath: "",
+    name: "新的服务",
+    repoUrl: "",
+    repoBranch: "",
     repoUser: undefined,
     repoPsw: undefined,
-    imageName: "pch18/node19_pnpm6",
-    imageTag: "latest",
+    autoPullBuild: false,
+    imageName: "pch18/node19",
+    imageTag: "pnpm8_pm2",
     containerName: "",
     buildCmd: "pnpm i && pnpm build",
     startCmd: "pnpm start",

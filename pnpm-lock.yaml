@@ -102,6 +102,7 @@ importers:
       api: workspace:*
       autoprefixer: ^10.4.14
       babel-plugin-styled-windicss: ^1.0.1
+      dayjs: ^1.11.7
       hox: ^2.1.0
       less: ^4.1.3
       lodash-es: ^4.17.21
@@ -122,6 +123,7 @@ importers:
       '@bff-sdk/web': link:../../bff-sdk/web
       '@ebay/nice-modal-react': 1.2.10_biqbaboplfbrettd7655fr4n2y
       ahooks: 3.7.6_react@18.2.0
+      dayjs: 1.11.7
       hox: 2.1.0_react@18.2.0
       lodash-es: 4.17.21
       react: 18.2.0

@@ -5,8 +5,8 @@ const fetchBranchRaw = `0014command=ls-refs
 001bref-prefix refs/heads/
 0000`;
 
-export const fetchGitBranchInfo = async (gitAddress: string) => {
-  const res = await fetch(gitAddress + "/git-upload-pack", {
+export const fetchGitBranchInfo = async (repoUrl: string) => {
+  const res = await fetch(`${repoUrl}/git-upload-pack`, {
     headers: {
       "Git-Protocol": "version=2",
     },
@@ -22,5 +22,5 @@ export const fetchGitBranchInfo = async (gitAddress: string) => {
   const headBranchName =
     branchs.find((b) => b.commitId === headCommitId)?.branchName ?? "";
 
-  return { gitAddress, branchs, headCommitId, headBranchName };
+  return { repoUrl, branchs, headCommitId, headBranchName };
 };

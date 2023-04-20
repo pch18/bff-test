@@ -4,50 +4,90 @@ import { useFormItem, useFormUtils } from "@/components/AForm";
 import { ControlledInheritor } from "@/components/ControlledInheritor";
 import { useRequest } from "ahooks";
 import api from "api";
-import { initFormBuild } from "./utils/initDatas";
+import { initFormBuild, initSiteServiceConfig } from "./utils/initDatas";
 
-import { useSiteDrawerStore } from "./useSiteDrawerStore";
+import { useSiteDrawerStore } from "./utils/useSiteDrawerStore";
+import { AFormListCollapse } from "@/components/AForm/AFormListCollapse";
+import { AFormWatch } from "@/components/AForm/AFormWatch";
+import { type FC } from "react";
 
-export const PanelService: React.FC = () => {
-  const { fu, form } = useSiteDrawerStore();
+export const PanelService = () => {
+  const { fu, formIns } = useSiteDrawerStore();
+
+  return (
+    <AFormListCollapse
+      form={formIns}
+      field="serviceConfig"
+      itemsKeyName="id"
+      onAdd={() => initSiteServiceConfig()}
+      addBtnText="添加服务"
+      renderTitle={(field) => (
+        <AFormWatch form={formIns} field={`${field}.name` as const}>
+          {(path) => (path ? `名称：${path}` : "未设置名称")}
+        </AFormWatch>
+      )}
+    >
+      {(field, index) => <ServiceItem field={field} index={index} />}
+    </AFormListCollapse>
+  );
+};
+
+export const ServiceItem: FC<{
+  field: `serviceConfig[${number}]`;
+  index: number;
+}> = ({ field }) => {
+  const { fu, formIns } = useSiteDrawerStore();
+
+  const FI = useFormItem(formIns, {
+    labelCol: { span: 5 },
+    wrapperCol: { span: 19 },
+  });
 
   const reqGitBranchInfo = useRequest(
     async () => {
-      const gitAddress = fu.getValue("gitAddress");
-      return await api.git.fetchGitBranchInfo(gitAddress);
+      const repoUrl = fu.getValue(`${field}.repoUrl`);
+      return await api.git.fetchGitBranchInfo(repoUrl);
     },
     { manual: true }
   );
 
   const handleGitAddressBlur = async () => {
-    const hasError = Boolean(form.getFieldError("gitAddress"));
-    const gitAddress = fu.getValue("gitAddress");
-    // 校验出错，或者删除 gitAddress 地址，就清空接口拉到的信息
-    if (hasError || !gitAddress) {
+    const hasError = Boolean(fu.getFieldError(`${field}.repoUrl`));
+    const repoUrl = fu.getValue(`${field}.repoUrl`);
+    // 校验出错，或者清空 repoUrl 地址，就清空接口拉到的信息
+    if (hasError || !repoUrl) {
       reqGitBranchInfo.mutate();
-      fu.setValue("gitBranch", "");
+      fu.setValue(`${field}.repoBranch`, "");
       return;
     }
 
-    if (gitAddress !== reqGitBranchInfo.data?.gitAddress) {
+    if (repoUrl !== reqGitBranchInfo.data?.repoUrl) {
       // 先把 gitAddress 设置进入，避免重复触发相同 gitAddress 的请求
       reqGitBranchInfo.mutate({
-        gitAddress,
+        repoUrl,
         branchs: [],
         headCommitId: "",
         headBranchName: "",
       });
       // 设置默认 branch
       const branchInfo = await reqGitBranchInfo.runAsync();
-      fu.setValue("gitBranch", branchInfo.headBranchName);
+      fu.setValue(`${field}.repoBranch`, branchInfo.headBranchName);
     }
   };
 
   return (
     <>
       <FI
+        label="服务名称"
+        field={`${field}.name` as const}
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="请输入服务名称" />
+      </FI>
+
+      <FI
         label="仓库地址"
-        field="gitAddress"
+        field={`${field}.repoUrl` as const}
         rules={[
           { required: true },
           {
@@ -62,7 +102,7 @@ export const PanelService: React.FC = () => {
             },
           },
         ]}
-        formatter={(d) => d?.replace(/\s+/g, "")}
+        output={(d: string) => d.replace(/\s+/g, "")}
       >
         <Input
           placeholder="通过此地址自动 clone / pull 代码"
@@ -70,14 +110,33 @@ export const PanelService: React.FC = () => {
         />
       </FI>
 
-      <Grid.Row>
-        <Grid.Col span={16}>
+      {/* <Grid.Row>
+        <Grid.Col span={13}>
           <FI
-            label="分支"
-            field="gitBranch"
+            field={`${field}.repoUser` as const}
+            label="登录鉴权"
             rules={[{ required: true }]}
             labelCol={{ span: 9 }}
-            wrapperCol={{ span: 15 }}
+            wrapperCol={{ span: 14 }}
+          >
+            <Input placeholder="git用户名" />
+          </FI>
+        </Grid.Col>
+        <Grid.Col span={11}>
+          <FI field={`${field}.repoPsw` as const} noStyle>
+            <Input placeholder="git密码" />
+          </FI>
+        </Grid.Col>
+      </Grid.Row> */}
+
+      <Grid.Row>
+        <Grid.Col span={17}>
+          <FI
+            label="分支"
+            field={`${field}.repoBranch` as const}
+            rules={[{ required: true }]}
+            labelCol={{ span: 7 }}
+            wrapperCol={{ span: 16 }}
           >
             <Select
               showSearch={true}
@@ -95,12 +154,12 @@ export const PanelService: React.FC = () => {
             />
           </FI>
         </Grid.Col>
-        <Grid.Col span={8}>
+        <Grid.Col span={6}>
           <FI
-            field="gitAutoPull"
-            label="自动Pull"
-            labelCol={{ span: 15 }}
-            wrapperCol={{ span: 5 }}
+            field={`${field}.autoPullBuild` as const}
+            label="自动部署"
+            labelCol={{ span: 20 }}
+            wrapperCol={{ span: 4 }}
             rules={[{ required: true }]}
           >
             <Switch />
@@ -109,45 +168,13 @@ export const PanelService: React.FC = () => {
       </Grid.Row>
 
       <Grid.Row>
-        <Grid.Col span={16}>
-          <FI
-            field="repoDir"
-            label="仓库目录"
-            normalize={(d: string) =>
-              d
-                .replace(/[\s\\.]+/g, "")
-                .replace(/^\//, "")
-                .replace(/\/+/g, "/")
-            }
-            rules={[{ required: true }]}
-            labelCol={{ span: 9 }}
-            wrapperCol={{ span: 15 }}
-          >
-            <Input prefix="./" placeholder="主目录下相对路径" />
-          </FI>
-        </Grid.Col>
-        <Grid.Col span={8}>
-          <FI
-            field="gitAutoPull"
-            label="用主目录"
-            labelCol={{ span: 15 }}
-            wrapperCol={{ span: 5 }}
-          >
-            <Switch />
-          </FI>
-        </Grid.Col>
-      </Grid.Row>
-
-      <Grid.Row>
-        <Grid.Col span={16}>
+        <Grid.Col span={17}>
           <FI
             label="构建镜像"
-            field="buildImageName"
+            field={`${field}.imageName` as const}
             rules={[{ required: true }]}
-            labelCol={{ span: 9 }}
-            wrapperCol={{ span: 15 }}
-            normalize={(v: string | undefined) => v || ""}
-            formatter={(v) => v || undefined}
+            labelCol={{ span: 7 }}
+            wrapperCol={{ span: 16 }}
           >
             <Select
               placeholder="镜像名称"
@@ -169,10 +196,8 @@ export const PanelService: React.FC = () => {
         <Grid.Col span={7}>
           <FI
             rules={[{ required: true }]}
-            field="buildImageVersion"
-            wrapperCol={{ span: 24 }}
-            normalize={(v: string | undefined) => v || ""}
-            formatter={(v) => v || undefined}
+            field={`${field}.imageTag` as const}
+            noStyle
           >
             <Select
               placeholder="版本"
@@ -192,7 +217,25 @@ export const PanelService: React.FC = () => {
           </FI>
         </Grid.Col>
       </Grid.Row>
-      <FI field="repoDir" label="构建命令" rules={[{ required: true }]}>
+      <FI
+        field={`${field}.buildCmd` as const}
+        label="构建命令"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="仅支持单行命令" />
+      </FI>
+      <FI
+        field={`${field}.startCmd` as const}
+        label="启动命令"
+        rules={[{ required: true }]}
+      >
+        <Input placeholder="仅支持单行命令" />
+      </FI>
+      <FI
+        field={`${field}.entryPort` as const}
+        label="服务端口"
+        rules={[{ required: true }]}
+      >
         <Input placeholder="仅支持单行命令" />
       </FI>
     </>

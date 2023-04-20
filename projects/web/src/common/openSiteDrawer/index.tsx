@@ -8,6 +8,7 @@ import {
   SiteDrawerStoreProvider,
   useSiteDrawerStore,
 } from "./utils/useSiteDrawerStore";
+import { PanelService } from "./PanelService";
 
 const SiteDrawer: FC = () => {
   const { _modal, isCreate, siteId, formIns } = useSiteDrawerStore();
@@ -24,29 +25,43 @@ const SiteDrawer: FC = () => {
       title={<span>站点信息</span>}
       className="min-w-[600px] !w-1/2"
     >
-      <Form form={formIns}>
-        <Tabs defaultActiveTab="route">
+      <Form form={formIns} className="h-full">
+        <Tabs
+          defaultActiveTab="service"
+          className="h-full flex flex-col"
+          css={`
+            .arco-tabs-content {
+              @apply flex-auto;
+            }
+            .arco-tabs-content-inner {
+              @apply h-full;
+            }
+            .arco-tabs-content-item {
+              @apply overflow-y-auto;
+            }
+          `}
+        >
           <Tabs.TabPane key="base" title="基本">
             <PanelBasic />
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="route" title="路由" disabled={isCreate}>
+          <Tabs.TabPane key="route" title="路由">
             <PanelRoute />
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="service" title="服务" disabled={isCreate}>
-            {/* <PanelService /> */}
+          <Tabs.TabPane key="service" title="服务">
+            <PanelService />
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="cert" title="证书" disabled={isCreate}>
+          <Tabs.TabPane key="cert" title="证书">
             证书配置
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="rewrite" title="地址重写" disabled={isCreate}>
+          <Tabs.TabPane key="rewrite" title="伪静态">
             Rewrite
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="caddy" title="配置预览" disabled={isCreate}>
+          <Tabs.TabPane key="caddy" title="配置预览">
             配置预览
           </Tabs.TabPane>
         </Tabs>

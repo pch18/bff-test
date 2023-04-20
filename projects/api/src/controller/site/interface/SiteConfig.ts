@@ -15,6 +15,8 @@ export interface SiteConfig {
   certConfig: SiteCertConfig[];
   /** 伪静态配置 */
   rewriteConfig: SiteRewriteConfig[];
+
+  createAt: number;
 }
 
 /** 站点路由配置 */
@@ -64,13 +66,20 @@ export type SiteRouteConfig = {
 /** 站点服务配置 */
 export interface SiteServiceConfig {
   id: string;
+  name: string;
 
   /** 仓库地址 */
-  repoPath: string;
+  repoUrl: string;
+  /** 仓库分支名 */
+  repoBranch: string;
+
   /** 仓库登录用户名 */
   repoUser?: string;
   /** 仓库登录密码 */
   repoPsw?: string;
+
+  /** 是否自动拉取最新代码并编译 */
+  autoPullBuild: boolean;
 
   /** 镜像名 */
   imageName: string;

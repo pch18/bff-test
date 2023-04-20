@@ -5,7 +5,7 @@ import {
   Collapse,
   Popconfirm,
 } from "@arco-design/web-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useRef } from "react";
 import { type GetFieldType } from "./interfaceGetFieldType";
 import { get } from "lodash-es";
 import {
@@ -16,7 +16,7 @@ import {
 } from "@arco-design/web-react/icon";
 import { useFormUtils } from "./useFormUtils";
 
-export const FormListCollapse = <
+export const AFormListCollapse = <
   IFormData,
   FieldKey extends string,
   ItemsKey extends string
@@ -29,36 +29,35 @@ export const FormListCollapse = <
   > extends undefined
     ? never
     : ItemsKey;
-  renderContent: (
-    index: number,
-    field: `${FieldKey}[${number}]`,
-    data: GetFieldType<IFormData, typeof field>
-  ) => ReactNode;
-  renderTitle: (
-    index: number,
-    field: `${FieldKey}[${number}]`,
-    data: GetFieldType<IFormData, `${FieldKey}[${number}]`>
-  ) => ReactNode;
+  children: (field: `${FieldKey}[${number}]`, index: number) => ReactNode;
+  renderTitle: (field: `${FieldKey}[${number}]`, index: number) => ReactNode;
   onAdd: () => GetFieldType<IFormData, `${FieldKey}[${number}]`>;
-  addBtnText: string;
+  addBtnText?: string;
+  /** 是否默认全部展开，默认否 */
+  defaultAllOpen?: boolean;
 }) => {
   const {
     form,
     field,
     itemsKeyName,
-    renderContent,
+    children: renderContent,
     renderTitle,
     onAdd,
-    addBtnText,
+    addBtnText = "添加",
+    defaultAllOpen = false,
   } = props;
 
   const fu = useFormUtils(form);
-  const [collapseOpenKeys, setCollapseOpenKeys] = useState(() =>
-    (fu.getValue as any)(field).map((r: any) => get(r, itemsKeyName))
+  const [collapseOpenKeys, setCollapseOpenKeys] = useState(
+    defaultAllOpen
+      ? () => (fu.getValue as any)(field).map((r: any) => get(r, itemsKeyName))
+      : []
   );
 
+  const addBtnRef = useRef<HTMLDivElement>(null);
+
   return (
-    <Form.List field="routeConfig">
+    <Form.List field={field}>
       {(fields, { add, remove, move }) => (
         <>
           <Collapse
@@ -82,7 +81,7 @@ export const FormListCollapse = <
                   `}
                   header={
                     <div className="w-full flex justify-between items-center">
-                      <div>{renderTitle(index, fieldName, itemData)}</div>
+                      <div>{renderTitle(fieldName, index)}</div>
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
@@ -123,11 +122,11 @@ export const FormListCollapse = <
                     </div>
                   }
                 >
-                  {renderContent(index, fieldName, itemData)}
+                  {renderContent(fieldName, index)}
                 </Collapse.Item>
               );
             })}
-            <div className="w-full h-10">
+            <div className="w-full h-10" ref={addBtnRef}>
               <Button
                 type="text"
                 className="w-full !h-full"
@@ -136,6 +135,10 @@ export const FormListCollapse = <
                   const newData = onAdd();
                   const newDataKey = get(newData, itemsKeyName);
                   setCollapseOpenKeys((k: any) => [...k, newDataKey]);
+                  add(newData);
+                  setTimeout(() => {
+                    addBtnRef.current?.scrollIntoView({ behavior: "smooth" });
+                  });
                 }}
               >
                 {addBtnText}
