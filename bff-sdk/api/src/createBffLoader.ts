@@ -3,6 +3,7 @@ import { ApiError, NetError } from "./error"
 import Bodyparser from 'koa-bodyparser'
 import { alsRun } from "./context"
 import { genPathControllerMap } from "./genPathControllerMap"
+import { PassThrough } from "stream"
 
 export const createBffLoader = (controller: any, opts?: {
   /** controller 对应的路由前缀,默认为 /api/ */
@@ -49,13 +50,29 @@ export const createBffLoader = (controller: any, opts?: {
         await preCallFn?.(callFn)
         return await callFn(...params)
       }
+
       const resp = await alsRun(ctx, callFnBindParams)
-      ctx.status = 200;
-      ctx.body = {
-        error: false,
-        code: 0,
-        data: resp
+
+      if (resp instanceof PassThrough) {
+        ctx.request.socket.setTimeout(0);
+        ctx.req.socket.setNoDelay(true);
+        ctx.req.socket.setKeepAlive(true);
+        ctx.set({
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+        });
+        ctx.status = 200;
+        ctx.body = resp
+      } else {
+        ctx.status = 200;
+        ctx.body = {
+          error: false,
+          code: 0,
+          data: resp
+        }
       }
+
     } catch (e) {
       if (e instanceof ApiError) {
         ctx.status = e.httpCode;

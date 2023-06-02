@@ -16,13 +16,21 @@
   "dependencies": {
     "@bff-sdk/api": "workspace:*",
     "@prisma/client": "^4.8.1",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/pluginutils": "^5.0.2",
     "@types/lodash": "^4.14.188",
+    "acorn": "^8.8.2",
+    "acorn-walk": "^8.2.0",
     "glob": "^8.0.3",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "prisma": "^4.8.1"
+    "prisma": "^4.8.1",
+    "rollup": "^3.23.0",
+    "rollup-plugin-typescript2": "^0.34.1",
+    "ts-morph": "^18.0.0"
   },
   "devDependencies": {
     "@types/glob": "^8.0.0",
@@ -32,6 +40,6 @@
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.1",
-    "typescript": "^4.8.4"
+    "typescript": "^5.0.4"
   }
 }

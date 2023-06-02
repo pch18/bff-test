@@ -3,12 +3,12 @@ import react from "@vitejs/plugin-react";
 import bffLoaderVitePlugin from "@bff-sdk/web/bffLoaderVitePlugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-// import Inspect from 'vite-plugin-inspect'
+import Inspect from "vite-plugin-inspect";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    // Inspect(),
+    Inspect(),
     react({
       babel: {
         plugins: [

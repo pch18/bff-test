@@ -36,7 +36,7 @@ export class NetError extends Error {
     /** 返回的http状态码, 默认500 */
     httpCode = 500
   ) {
-    if (httpCode >=200 && httpCode < 300) {
+    if (httpCode >= 200 && httpCode < 300) {
       throw new Error('NetError 的 httpCode 不可为 2xx')
     }
     super()
