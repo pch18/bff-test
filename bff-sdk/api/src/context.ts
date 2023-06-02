@@ -9,10 +9,10 @@ export const alsRun = (data: StorageType, fn: any) => {
   return asyncLocalStorage.run(data, fn)
 }
 
-export const useCtx = () => {
+export const getCtx = () => {
   const ctx = asyncLocalStorage.getStore()
   if (!ctx) {
-    throw new Error('只能在请求上下文中使用 useCtx')
+    throw new Error('只能在请求上下文中使用 getCtx')
   }
   return ctx
 }

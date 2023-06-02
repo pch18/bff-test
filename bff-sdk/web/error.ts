@@ -16,7 +16,7 @@ export class ApiError extends Error {
     httpCode = 202
   ) {
     if (httpCode < 200 || httpCode >= 300) {
-      throw new Error('httpCode 必须为 2xx')
+      throw new Error('ApiError 的 httpCode 必须为 2xx')
     }
     super()
     this.message = message
@@ -36,8 +36,8 @@ export class NetError extends Error {
     /** 返回的http状态码, 默认500 */
     httpCode = 500
   ) {
-    if (httpCode >=200 && httpCode < 300) {
-      throw new Error('httpCode 不可为 2xx')
+    if (httpCode >= 200 && httpCode < 300) {
+      throw new Error('NetError 的 httpCode 不可为 2xx')
     }
     super()
     this.message = message

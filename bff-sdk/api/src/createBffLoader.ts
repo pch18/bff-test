@@ -1,8 +1,9 @@
 import { Middleware } from "koa"
-import { ApiError, NetError } from "./error"
+import { ApiError, NetError } from "."
 import Bodyparser from 'koa-bodyparser'
 import { alsRun } from "./context"
 import { genPathControllerMap } from "./genPathControllerMap"
+import { CustomResponse } from "@bff-sdk/web/useBffStream"
 
 export const createBffLoader = (controller: any, opts?: {
   /** controller 对应的路由前缀,默认为 /api/ */
@@ -49,13 +50,20 @@ export const createBffLoader = (controller: any, opts?: {
         await preCallFn?.(callFn)
         return await callFn(...params)
       }
+
       const resp = await alsRun(ctx, callFnBindParams)
-      ctx.status = 200;
-      ctx.body = {
-        error: false,
-        code: 0,
-        data: resp
+
+      if (resp instanceof CustomResponse) {
+        return await alsRun(ctx, (resp as any).run)
+      } else {
+        ctx.status = 200;
+        ctx.body = {
+          error: false,
+          code: 0,
+          data: resp
+        }
       }
+
     } catch (e) {
       if (e instanceof ApiError) {
         ctx.status = e.httpCode;

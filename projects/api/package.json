@@ -15,23 +15,23 @@
   "license": "ISC",
   "dependencies": {
     "@bff-sdk/api": "workspace:*",
-    "@prisma/client": "^4.8.1",
-    "@types/lodash": "^4.14.188",
-    "glob": "^8.0.3",
-    "koa": "^2.13.4",
-    "koa-bodyparser": "^4.3.0",
+    "@prisma/client": "^4.15.0",
+    "@types/lodash": "^4.14.195",
+    "glob": "^8.1.0",
+    "koa": "^2.14.2",
+    "koa-bodyparser": "^4.4.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
-    "prisma": "^4.8.1"
+    "prisma": "^4.15.0"
   },
   "devDependencies": {
-    "@types/glob": "^8.0.0",
-    "@types/koa": "^2.13.5",
+    "@types/glob": "^8.1.0",
+    "@types/koa": "^2.13.6",
     "@types/koa-bodyparser": "^4.3.10",
-    "@types/node": "^18.11.9",
-    "nodemon": "^2.0.20",
+    "@types/node": "^18.16.16",
+    "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.1",
-    "typescript": "^4.8.4"
+    "tslib": "^2.5.2",
+    "typescript": "^5.1.3"
   }
 }
