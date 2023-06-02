@@ -16,9 +16,9 @@ export const fetchGitBranchInfo = async (repoUrl: string) => {
   const rows = res.split("\n").map((r) => r.slice(4));
   const branchs = rows.slice(1, rows.length - 1).map((r) => {
     const [commitId, branchName] = r.split(" ");
-    return { commitId, branchName: branchName.replace(/^refs\/heads\//, "") };
+    return { commitId, branchName: branchName?.replace(/^refs\/heads\//, "") };
   });
-  const headCommitId = rows[0].slice(0, 40);
+  const headCommitId = rows[0]?.slice(0, 40);
   const headBranchName =
     branchs.find((b) => b.commitId === headCommitId)?.branchName ?? "";
 

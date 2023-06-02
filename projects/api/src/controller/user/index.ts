@@ -1,30 +1,20 @@
-import { ApiError, useCtx } from "@bff-sdk/api";
-import { prisma } from "../../utils/prisma";
+import { ApiError, getCtx } from "@bff-sdk/api";
 
 export const getAllUsers = async () => {
-  // const ctx = useCtx()
-  const users = await prisma.user.findMany();
-  return users;
+  // const ctx = getCtx()
+  return [];
 };
 
 // const useCheckAdmin = () => {
-//   const ctx = useCtx()
+//   const ctx = getCtx()
 //   if (!ctx.admin) {
 //     throw new ApiError('xxx',403,403)
 //   }
 // }
 
 export const addUser2 = async (name: string) => {
-  const ctx = useCtx();
+  const ctx = getCtx();
   // useCheckAdmin()
-  console.log({ name });
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email: name,
-    },
-  });
-
-  return { user, ip: ctx.ip };
+  return [];
 };
