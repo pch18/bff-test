@@ -1,15 +1,18 @@
 import Events from "events";
 import { getCtx } from "./context";
-import { sleep } from "./utils";
+import { CustomResponse, sleep } from "./utils";
 import { PassThrough } from 'stream'
-import { BffStreamHandle } from "@bff-sdk/web/useBffStream";
+import { type BffEventSource } from "@bff-sdk/web/useBffStream";
 
-export interface BffStreamContext<ContentType extends Record<string, any>> {
+export interface BffStreamContext<DataTypes extends Record<string, any>, IdType> {
     /** 向客户端发送数据 */
-    send: <T extends keyof ContentType>(type: T, id: string | number | null, content: ContentType[T]) => void;
+    send: <T extends keyof DataTypes>(type: T, id: IdType | null, content: DataTypes[T]) => void;
 
     /** 连接关闭时执行 */
     onClose: (destoryFn: () => void) => void;
+
+    /** 连接结束，并关闭连接，客户端不再重联 */
+    done: () => void
 
     /** 检查连接是否存活 */
     checkAlive: () => boolean;
@@ -22,12 +25,13 @@ export interface BffStreamContext<ContentType extends Record<string, any>> {
         loopFn: (stop: () => void) => Promise<void> | void,
         ms: number
     ) => Promise<void>;
+
+    /** 上次的id位置 */
+    lastId: IdType | undefined
 }
 
-
-
-export const createBffStream = async<ContentType extends Record<string, any>>(
-    mainFn: (handle: BffStreamContext<ContentType>) => Promise<void>
+export const createBffStream = async<DataTypes extends Record<string, any>, IdType = number>(
+    mainFn: (handle: BffStreamContext<DataTypes, IdType>) => Promise<void>
 ) => {
     const ctx = getCtx();
 
@@ -45,21 +49,25 @@ export const createBffStream = async<ContentType extends Record<string, any>>(
         ctx.status = 200;
         ctx.body = stream
 
-        const streamWrite = ({ data, ...other }: {
-            id?: string,
-            event?: string,
+        const streamWrite = ({ id, event, data, retry }: {
+            id?: IdType,
+            event: 'data' | 'beat' | 'close' | 'done' | 'failed',
             data?: any,
             retry?: number
         }) => {
-            const lines = Object.entries(other).map(
-                ([key, val]) => `${key.replace(/\s+/g, '')}: ${val.toString().replace(/\s+/g, '')}`
-            )
+            const lines = [`event: ${event}`]
             lines.push(`data: ${data ? JSON.stringify(data) : ''}`)
+            if (id !== undefined) {
+                lines.push(`id: ${JSON.stringify(id)}`)
+            }
+            if (retry !== undefined) {
+                lines.push(`retry: ${retry}`)
+            }
             stream.write(lines.join('\n') + '\n\n')
         }
-        const send: BffStreamContext<ContentType>["send"] = (type, id, content) => {
+        const send: BffStreamContext<DataTypes, IdType>["send"] = (type, id, content) => {
             streamWrite({
-                ...(id === null ? {} : { id: JSON.stringify(id) }),
+                ...(id === null ? {} : { id }),
                 event: 'data',
                 data: { id, type, content }
             })
@@ -68,7 +76,7 @@ export const createBffStream = async<ContentType extends Record<string, any>>(
         streamWrite({ event: 'beat' })
         const beatTimer = setInterval(() => {
             streamWrite({ event: 'beat' })
-        }, 4000)
+        }, 3000)
 
         let isAlive = true;
         const checkAlive = () => isAlive;
@@ -80,12 +88,18 @@ export const createBffStream = async<ContentType extends Record<string, any>>(
 
         const onClose = (fn: () => void) => events.addListener("close", fn);
         onClose(() => {
+            if (isAlive === false) return
             streamWrite({ event: 'close' })
             clearInterval(beatTimer)
-            isAlive = false;
             events.removeAllListeners();
             ctx.res.end();
+            isAlive = false;
         });
+
+        const done = () => {
+            streamWrite({ event: 'done' })
+            events.emit("close");
+        }
 
         const keep = async (destoryFn: () => void) => {
             await new Promise<void>((resolve) => {
@@ -94,7 +108,7 @@ export const createBffStream = async<ContentType extends Record<string, any>>(
             });
         };
 
-        const loop: BffStreamContext<ContentType>["loop"] = async (
+        const loop: BffStreamContext<DataTypes, IdType>["loop"] = async (
             loopFn,
             ms
         ) => {
@@ -102,15 +116,28 @@ export const createBffStream = async<ContentType extends Record<string, any>>(
             while (checkAlive() && !isStop) {
                 await sleep(ms);
                 await loopFn(() => isStop = true);
+                if (isStop) break
             }
         };
+
+        let lastId: IdType | undefined
+        try {
+            const headerLastId = ctx.header['last-event-id']
+            if (typeof headerLastId === 'string') {
+                lastId = JSON.parse(headerLastId)
+            }
+        } catch { }
 
         mainFn({
             send,
             onClose,
             checkAlive,
+            done,
             keep,
             loop,
+            lastId
+        }).then(() => {
+            streamWrite({ event: 'done' })
         }).catch((e) => {
             streamWrite({ event: 'failed', data: e?.message || '发生错误' })
         }).finally(() => {
@@ -119,17 +146,17 @@ export const createBffStream = async<ContentType extends Record<string, any>>(
     }
 
     const run = async () => {
-        if (ctx.query['_bff_upgrade'] === 'bff-stream') {
+        if (ctx.header['accept'] === 'text/event-stream') {
             await mainRun()
         } else {
             ctx.status = 202;
             ctx.body = {
-                _bff_upgrade: 'bff-stream'
+                _bff_upgrade: 'bff-event-source'
             }
         }
     }
 
-    const handle = new BffStreamHandle<ContentType>()
+    const handle = new CustomResponse() as BffEventSource<DataTypes>
     Object.assign(handle, { run })
 
     return handle

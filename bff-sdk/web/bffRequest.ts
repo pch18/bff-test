@@ -1,15 +1,16 @@
 import { BffErrorEvent } from "./catchError"
 import { ApiError, NetError } from "./error"
-
+import { BffEventSource } from "./useBffStream"
 
 declare const __BFF_API_PATH_PREFIX__: string
 
 const apiCallFn = async (path: string[], ...params: any[]) => {
   try {
     const requestPath = `${__BFF_API_PATH_PREFIX__}${path.join('/')}`
+    const requestBody = { params, time: new Date().getTime() }
     const resRaw = await fetch(requestPath, {
       method: 'post',
-      body: JSON.stringify({ params, time: new Date().getTime() }),
+      body: JSON.stringify(requestBody),
       headers: {
         'Content-Type': 'application/json'
       }
@@ -20,8 +21,9 @@ const apiCallFn = async (path: string[], ...params: any[]) => {
         throw new ApiError(resJson.msg, resJson.code, resRaw.status)
       } else if (resJson.error === false) {
         return resJson.data
-        // } else if (resJson._bff_upgrade === 'bff-stream') {
-        //   return createBffHandle(requestPath)
+      } else if (resJson._bff_upgrade === 'bff-event-source') {
+        const urlQuery = `?params=${encodeURIComponent(JSON.stringify(requestBody.params))}&time=${requestBody.time}`
+        return new BffEventSource(requestPath + urlQuery)
       } else {
         throw new Error('请求数据异常！')
       }
@@ -36,80 +38,12 @@ const apiCallFn = async (path: string[], ...params: any[]) => {
   }
 }
 
-
-// const createBffHandle = (_requestPath: string) => {
-
-//   const evnetMap = {} as Record<string, Function[]>
-//   const regEvent = (type: string, fn: Function) => {
-//     if (!evnetMap[type]) {
-//       evnetMap[type] = [fn]
-//     } else {
-//       evnetMap[type].push(fn)
-//     }
-//   }
-//   const callEvent = (type: string, prarm?: any) => {
-//     evnetMap[type]?.forEach(f => {
-//       try { f(prarm) } catch { }
-//     })
-//   }
-
-//   const requestPath = _requestPath + '?_bff_upgrade=bff-stream'
-//   const eventSource = new EventSource(requestPath);
-
-//   regEvent('onDestory', () => eventSource.close())
-
-//   eventSource.onopen = (e) => callEvent('onOpen', e)
-//   regEvent('onDestory', () => eventSource.onopen = null)
-
-//   const onError = (e: Event) => callEvent('onError', e)
-//   eventSource.onerror = onError
-//   eventSource.addEventListener('error', onError)
-//   regEvent('onDestory', () => eventSource.onerror = null)
-//   regEvent('onDestory', () => eventSource.removeEventListener('error', onError))
-
-//   const onBeat = (e: Event) => callEvent('onBeat', e)
-//   eventSource.addEventListener('beat', onBeat)
-//   regEvent('onDestory', () => eventSource.removeEventListener('beat', onBeat))
-
-//   const onDone = (e: Event) => callEvent('onDone', e)
-//   eventSource.addEventListener('done', onDone)
-//   regEvent('onDone', () => callEvent('onDestory'))
-//   regEvent('onDestory', () => eventSource.removeEventListener('done', onDone))
-
-//   const onData = (e: MessageEvent) => {
-//     const data = JSON.parse(e.data)
-//     callEvent(`onData_${data.type}}`, data.content)
-//   }
-//   eventSource.addEventListener('data', onData)
-//   regEvent('onDestory', () => eventSource.removeEventListener('data', onData))
-
-//   return {
-//     on: (type: string, fn: (data: any) => void) => regEvent(`onData_${type}}`, fn),
-//     onOpen: (fn: (e: Event) => void) => regEvent('onOpen', fn),
-//     onBeat: (fn: (e: Event) => void) => regEvent('onBeat', fn),
-//     onDone: (fn: (e: Event) => void) => regEvent('onDone', fn),
-//     onError: (fn: (e: Event) => void) => regEvent('onError', fn),
-//     onClose: (fn: (e: Event) => void) => regEvent('onClose', fn),
-//     destory: () => callEvent('onDestory')
-//   }
-// }
-
-
-export const getBffRequestPath = (input: any): string[] => {
-  return input[getPathSymbol]
-};
-
-const getPathSymbol = Symbol('getPathSymbol');
-
 const bffRequest = new Proxy({}, {
   get(_, key: string) {
     const path = [key]
     const callFn = apiCallFn.bind(null, path)
     const callChain: any = new Proxy(callFn, {
       get(_, key: string) {
-        if (key === getPathSymbol as any) {
-          return path
-        }
         path.push(key)
         return callChain
       }

@@ -3,7 +3,7 @@ import { ApiError, NetError } from "."
 import Bodyparser from 'koa-bodyparser'
 import { alsRun } from "./context"
 import { genPathControllerMap } from "./genPathControllerMap"
-import { CustomResponse } from "@bff-sdk/web/useBffStream"
+import { CustomResponse } from "./utils"
 
 export const createBffLoader = (controller: any, opts?: {
   /** controller 对应的路由前缀,默认为 /api/ */
@@ -38,10 +38,20 @@ export const createBffLoader = (controller: any, opts?: {
         throw new NetError('没有对应的api调用', 404)
       }
 
-      // 解析 post body 数据
-      await bodyParser(ctx, () => Promise.resolve(undefined));
-      const { params = [] } = ctx.request.body as any || {}
-      if (!(params instanceof Array)) {
+      // 解析 params 数据
+      let params: any[]
+      try {
+        const queryParams = ctx.query['params']
+        if (typeof queryParams === 'string') {
+          params = JSON.parse(queryParams)
+        } else {
+          await bodyParser(ctx, () => Promise.resolve(undefined));
+          params = (ctx.request.body as any).params
+        }
+        if (!(params instanceof Array)) {
+          throw new Error()
+        }
+      } catch {
         throw new NetError('请求数据不合法', 400)
       }
 

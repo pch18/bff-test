@@ -20,12 +20,19 @@ export const func4 = async (a: number, b: string) => {
 
 export const msgInfo = async () =>
   await createBffStream<{
-    a: 1
-  }>(async ({ send, loop }) => {
-    let time = 1;
+    msg: string;
+    header: any;
+  }>(async ({ send, loop, lastId = 12 }) => {
+    const ctx = getCtx();
+    let time = 0;
+
     await loop((stop) => {
-      send("msg", time, `123_${time++}`);
-      if (time > 10) stop();
+      lastId++;
+      time++;
+
+      send("msg", lastId, `${time}_${lastId}`);
+      send("header", null, ctx.header);
+      if (time > 5) throw new Error();
     }, 1000);
   });
 

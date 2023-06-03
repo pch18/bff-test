@@ -1,16 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { getBffRequestPath } from './bffRequest'
 
-declare const __BFF_API_PATH_PREFIX__: string
-
-export class CustomResponse { }
-
-export class BffStreamHandle<ContentType extends Record<string, any>> extends CustomResponse {
+export class BffEventSource<DataTypes extends Record<string, any>> extends EventSource {
 }
 
-export const useBffStream = <ContentType extends Record<string, any>>(
-    handle: () => Promise<BffStreamHandle<ContentType>>,
-    dataEvents: { [Key in keyof ContentType]: (dataType: ContentType[Key]) => void },
+export const useBffStream = <DataTypes extends Record<string, any>>(
+    handle: () => Promise<BffEventSource<DataTypes>>,
+    dataEvents: { [Key in keyof DataTypes]?: (dataType: DataTypes[Key]) => void },
     opts?: {
         /** 连接打开后 */
         onOpen?: (e: Event) => void
@@ -50,14 +45,12 @@ export const useBffStream = <ContentType extends Record<string, any>>(
         dataEventsRef.current[type]?.(content)
     }, [])
 
-    const connect = () => {
+    const connect = async () => {
         if (esRef.current) {
             return
         }
-        const path = getBffRequestPath(handle)
-        const requestPath = `${__BFF_API_PATH_PREFIX__}${path.join('/')}`
 
-        const es = new EventSource(requestPath)
+        const es = await handle()
         esRef.current = es
 
         es.addEventListener('open', onOpen)
@@ -67,6 +60,8 @@ export const useBffStream = <ContentType extends Record<string, any>>(
         es.addEventListener('beat', onBeat)
         es.addEventListener('done', onDone)
         es.addEventListener('data', onData)
+        
+        return es
     }
 
     useLayoutEffect(() => {
