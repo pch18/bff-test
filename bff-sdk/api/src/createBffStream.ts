@@ -2,7 +2,7 @@ import Events from "events";
 import { getCtx } from "./context";
 import { CustomResponse, sleep } from "./utils";
 import { PassThrough } from 'stream'
-import { type BffEventSource } from "@bff-sdk/web/useBffStream";
+import { type BffEventSource } from "../../web/useBffStream";
 
 export interface BffStreamContext<DataTypes extends Record<string, any>, IdType> {
     /** 向客户端发送数据 */

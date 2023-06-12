@@ -1,4 +1,4 @@
-export { ApiError, NetError } from '@bff-sdk/web/error'
+export { ApiError, NetError } from '../../web/error'
 export { createBffLoader } from './createBffLoader'
 export { getCtx } from './context'
 export { sleep } from './utils'

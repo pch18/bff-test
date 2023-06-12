@@ -1,6 +1,6 @@
 {
   "name": "@bff-sdk/api",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "description": "",
   "type": "module",
   "main": "./dist/index.js",
@@ -12,8 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "koa-bodyparser": "^4.4.0",
-    "@bff-sdk/web": "workspace:*"
+    "koa-bodyparser": "^4.4.0"
   },
   "devDependencies": {
     "@types/koa": "^2.13.6",
