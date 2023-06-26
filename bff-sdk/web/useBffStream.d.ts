@@ -1,4 +1,5 @@
 export declare class BffEventSource<DataTypes extends Record<string, any>> extends EventSource {
+    _d?: DataTypes;
 }
 export declare const useBffStream: <DataTypes extends Record<string, any>>(handle: () => Promise<BffEventSource<DataTypes>>, dataEvents: { [Key in keyof DataTypes]?: ((dataType: DataTypes[Key]) => void) | undefined; }, opts?: {
     /** 连接打开后 */

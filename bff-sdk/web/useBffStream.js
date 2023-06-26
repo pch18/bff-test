@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useRef } from 'react';
 export class BffEventSource extends EventSource {
+    _d;
 }
 export const useBffStream = (handle, dataEvents, opts) => {
     const dataEventsRef = useRef(dataEvents);
