@@ -17,7 +17,7 @@ export default function bffLoaderVitePlugin(opts: {
     apiDevHost = 'localhost',
     apiDevPort = 7016,
     apiDevSchema = 'http',
-    controllerImportName = 'api'
+    controllerImportName = '@api'
   } = opts
 
   return {

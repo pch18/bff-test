@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 
 export class BffEventSource<DataTypes extends Record<string, any>> extends EventSource {
+    _d?:DataTypes
 }
 
 export const useBffStream = <DataTypes extends Record<string, any>>(
