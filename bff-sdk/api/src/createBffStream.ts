@@ -6,7 +6,7 @@ import { type BffEventSource } from "../../web/useBffStream";
 
 export interface BffStreamContext<DataTypes extends Record<string, any>, IdType> {
     /** 向客户端发送数据 */
-    send: <T extends keyof DataTypes>(type: T, id: IdType | null, content: DataTypes[T]) => void;
+    send: <T extends keyof DataTypes>(type: T, id: IdType | null, content: DataTypes[T]) => Promise<void>;
 
     /** 连接关闭时执行 */
     onClose: (destoryFn: () => void) => void;
@@ -63,10 +63,18 @@ export const createBffStream = async<DataTypes extends Record<string, any>, IdTy
             if (retry !== undefined) {
                 lines.push(`retry: ${retry}`)
             }
-            stream.write(lines.join('\n') + '\n\n')
+            return new Promise<void>((resolve, reject) => {
+                stream.write(lines.join('\n') + '\n\n', err => {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve()
+                    }
+                })
+            })
         }
         const send: BffStreamContext<DataTypes, IdType>["send"] = (type, id, content) => {
-            streamWrite({
+            return streamWrite({
                 ...(id === null ? {} : { id }),
                 event: 'data',
                 data: { id, type, content }
