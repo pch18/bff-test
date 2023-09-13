@@ -64,7 +64,7 @@ export const createBffStream = async<DataTypes extends Record<string, any>, IdTy
                 lines.push(`retry: ${retry}`)
             }
             return new Promise<void>((resolve, reject) => {
-                stream.write(lines.join('\n') + '\n\n', err => {
+                stream.writable && stream.write(lines.join('\n') + '\n\n', err => {
                     if (err) {
                         reject(err)
                     } else {
