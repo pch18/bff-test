@@ -26,6 +26,8 @@ export default function bffLoaderVitePlugin(opts: {
             proxy: {
                 [x: string]: {
                     target: string;
+                    changeOrigin: boolean;
+                    configure: (proxy: any, options: any) => void;
                 };
             };
         };

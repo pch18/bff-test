@@ -16,11 +16,17 @@ export default function bffLoaderVitePlugin(opts) {
                 proxy: {
                     [apiPathPrefix]: {
                         target: `${apiDevSchema}://${apiDevHost}:${apiDevPort}`,
-                        // bypass: (req: any) => {
-                        //   if (req.method !== 'POST') {
-                        //     return req.url
-                        //   }
-                        // }
+                        changeOrigin: true,
+                        // ws: true,
+                        configure: (proxy, options) => {
+                            // proxy 是 'http-proxy' 的实例
+                            proxy.on('proxyReq', (proxyReq, req, res) => {
+                                res.on('close', () => {
+                                    if (!res.finished)
+                                        proxyReq.destroy();
+                                });
+                            });
+                        }
                     }
                 }
             }
