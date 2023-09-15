@@ -13,6 +13,11 @@ export const createBffLoader = (controller: any, opts?: {
   /** 可以输出一些 debug log */
   debug?: boolean,
 }): Middleware => {
+
+  process.on("uncaughtException", function (err) {
+    console.error("uncaughtException", err);
+  });
+  
   const {
     controllerPathPrefix = '/api/',
     preCallFn,
@@ -95,5 +100,4 @@ export const createBffLoader = (controller: any, opts?: {
 
   }
 }
-
 
